@@ -311,7 +311,7 @@ send_song_template = """
                     item.prepend(tracksImage);
                     item.onclick = () => {
                         document.getElementById("spotify_url").value = track.external_urls.spotify;
-                        document.getElementById("message").value = track.name; // Populate message with song name
+                        document.getElementById("song_search").value = track.name; // Populate message with song name
                         suggestions.style.display = "none";
                     };
                     suggestions.appendChild(item);
