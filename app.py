@@ -19,7 +19,16 @@ def init_db():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 recipient TEXT,
                 message TEXT,
-                spotify_url TEXT
+                spotify_url TEXT,
+                likes INTEGER DEFAULT 0
+            )
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS comments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                message_id INTEGER,
+                comment TEXT,
+                FOREIGN KEY (message_id) REFERENCES messages (id)
             )
         """)
     conn.close()
@@ -84,7 +93,7 @@ index_template = """
                     <p>{{ msg[1] }}</p>
                     {% if msg[2] %}
                         <iframe src="{{ msg[2].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
-                    {% endif %}
+                    {% if %}
                 </div>
             {% endfor %}
             <!-- Duplicate the cards for infinite effect -->
@@ -179,18 +188,16 @@ send_song_template = """
                 results.tracks.items.forEach(track => {
                     const item = document.createElement("div");
                     item.textContent = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
-                    const albumImage = document.createElement("img");
-                    albumImage.src = track.album.images[0].url; // Get the album image
-                    albumImage.style.width = "50px"; // Set a width for the image
-                    albumImage.style.marginRight = "10px"; // Add some margin
-                    item.prepend(albumImage); // Add the image to the suggestion item
                     item.onclick = () => {
                         document.getElementById("spotify_url").value = track.external_urls.spotify;
-                        suggestions.style.display = "none";
+                        document.getElementById("song_search").value = track.name;
+                        suggestions.innerHTML = ""; // Clear suggestions
                     };
                     suggestions.appendChild(item);
                 });
-                suggestions.style.display = "block";
+                suggestions.style.display = "block"; // Show suggestions
+            } else {
+                suggestions.style.display = "none"; // Hide suggestions if no results
             }
         }
     </script>
@@ -206,97 +213,129 @@ browse_template = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Browse Messages</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #121212; color: #f2f2f2; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { max-width: 600px; width: 100%; padding: 20px; text-align: center; background-color: #1f1f1f; border-radius: 8px; }
-        form label { display: block; margin: 15px 0 5px; color: #bbb; }
-        form input { width: 100%; padding: 12px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; margin-bottom: 15px; }
-        form button { background-color: #1DB954; color: #fff; padding: 12px; width: 100%; border: none; border-radius: 4px; cursor: pointer; }
-        form button:hover { background-color: #17a648; }
-        .message { margin: 20px 0; background: #333; padding: 15px; border-radius: 8px; }
-        .message p { margin: 5px 0; color: #bbb; }
-        .message iframe { width: 100%; height: 80px; border-radius: 8px; }
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #f2f2f2; padding: 20px; }
+        .message { background: #1f1f1f; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+        .message p { margin: 5px 0; }
+        button { background-color: #1DB954; color: #fff; padding: 10px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #17a648; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Browse Messages</h1>
-        <form action="{{ url_for('browse') }}" method="GET">
-            <label for="recipient">Recipient's Name:</label>
-            <input type="text" name="recipient" required>
-            <button type="submit">Search</button>
-        </form>
-
-        <div id="messages">
-            {% if messages %}
-                {% for msg in messages %}
-                    <div class="message">
-                        <p><strong>To:</strong> {{ msg[0] }}</p>
-                        <p>{{ msg[1] }}</p>
-                        {% if msg[2] %}
-                            <iframe src="{{ msg[2].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p>No messages found.</p>
-            {% endif %}
-        </div>
+    <h1>Browse Messages</h1>
+    <div id="messages">
+        {% for msg in messages %}
+            <div class="message">
+                <p><strong>To:</strong> {{ msg[1] }}</p>
+                <p>{{ msg[2] }}</p>
+                {% if msg[3] %}
+                    <iframe src="{{ msg[3].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
+                {% endif %}
+                <p>Likes: {{ msg[4] }}</p>
+                <button onclick="likeMessage({{ msg[0] }})">Like</button>
+                <div id="comments-{{ msg[0] }}">
+                    {% for comment in msg[5] %}
+                        <p>{{ comment }}</p>
+                    {% endfor %}
+                </div>
+                <textarea id="comment-input-{{ msg[0] }}" placeholder="Add a comment..."></textarea>
+                <button onclick="addComment({{ msg[0] }})">Submit Comment</button>
+            </div>
+        {% endfor %}
     </div>
+
+    <script>
+        async function likeMessage(messageId) {
+            const response = await fetch(`/like_message/${messageId}`, { method: 'POST' });
+            const result = await response.json();
+            if (result.success) {
+                location.reload(); // Reload to see updated likes
+            }
+        }
+
+        async function addComment(messageId) {
+            const commentInput = document.getElementById(`comment-input-${messageId}`);
+            const comment = commentInput.value;
+            if (comment) {
+                const response = await fetch(`/add_comment`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message_id: messageId, comment: comment })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    location.reload(); // Reload to see new comment
+                }
+            }
+        }
+    </script>
 </body>
 </html>
 """
 
 @app.route('/')
 def index():
-    messages = []  # Load messages from the database to display in the slider
     with sqlite3.connect("messages.db") as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT recipient, message, spotify_url FROM messages")
+        cursor.execute("SELECT * FROM messages")
         messages = cursor.fetchall()
     return render_template_string(index_template, messages=messages)
 
-@app.route('/send_song')
+@app.route('/send_song', methods=['GET', 'POST'])
 def send_song():
-    if 'spotify_token' not in session:
-        get_spotify_token()
+    if request.method == 'POST':
+        recipient = request.form['to']
+        message = request.form['message']
+        spotify_url = request.form['spotify_url']
+        with sqlite3.connect("messages.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO messages (recipient, message, spotify_url) VALUES (?, ?, ?)", (recipient, message, spotify_url))
+            conn.commit()
+        return redirect(url_for('index'))
     return render_template_string(send_song_template)
 
-@app.route('/submit', methods=['POST'])
-def submit():
-    recipient = request.form.get("to")
-    message = request.form.get("message")
-    spotify_url = request.form.get("spotify_url")
-
-    with sqlite3.connect("messages.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO messages (recipient, message, spotify_url) VALUES (?, ?, ?)",
-                       (recipient, message, spotify_url))
-    return redirect(url_for('send_song'))
-
-@app.route('/browse', methods=['GET'])
+@app.route('/browse')
 def browse():
-    recipient = request.args.get("recipient")
-    messages = []  # Initialize messages as an empty list
     with sqlite3.connect("messages.db") as conn:
         cursor = conn.cursor()
-        if recipient:
-            cursor.execute("SELECT recipient, message, spotify_url FROM messages WHERE recipient LIKE ?", ('%' + recipient + '%',))
-            messages = cursor.fetchall()
+        cursor.execute("SELECT * FROM messages")
+        messages = cursor.fetchall()
+        # Fetch comments for each message
+        for msg in messages:
+            cursor.execute("SELECT comment FROM comments WHERE message_id = ?", (msg[0], ))
+            msg.append(cursor.fetchall())
     return render_template_string(browse_template, messages=messages)
 
 @app.route('/search_song')
 def search_song():
     query = request.args.get('query')
-    if query:
-        if 'spotify_token' not in session:
-            get_spotify_token()
+    token = session.get('spotify_token')
+    if not token:
+        get_spotify_token()
+        token = session.get('spotify_token')
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+    response = requests.get(f"https://api.spotify.com/v1/search?q={query}&type=track", headers=headers)
+    return jsonify(response.json())
 
-        headers = {
-            'Authorization': f'Bearer {session.get("spotify_token")}'
-        }
-        response = requests.get(f'https://api.spotify.com/v1/search?q={query}&type=track', headers=headers)
-        return jsonify(response.json())
-    return jsonify({"error": "No query provided"})
+@app.route('/like_message/<int:message_id>', methods=['POST'])
+def like_message(message_id):
+    with sqlite3.connect("messages.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE messages SET likes = likes + 1 WHERE id = ?", (message_id,))
+        conn.commit()
+    return jsonify(success=True)
 
-if __name__ == "__main__":
+@app.route('/add_comment', methods=['POST'])
+def add_comment():
+    data = request.get_json()
+    message_id = data['message_id']
+    comment = data['comment']
+    with sqlite3.connect("messages.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO comments (message_id, comment) VALUES (?, ?)", (message_id, comment))
+        conn.commit()
+    return jsonify(success=True)
+
+if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=5000)
