@@ -50,8 +50,8 @@ index_template = """
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f4f1e6;
-            color: #3a3a3a;
+            background-color: #e9ecef;
+            color: #343a40;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -65,15 +65,15 @@ index_template = """
             padding: 20px;
             text-align: center;
             margin-top: 20px;
-            background: rgba(255, 255, 255, 0.9);
+            background: #ffffff;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
         h1 {
             margin-bottom: 20px;
             font-size: 2.5em;
             color: #1DB954;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
         button {
             background-color: #1DB954;
@@ -86,7 +86,7 @@ index_template = """
             margin-top: 10px;
             transition: background-color 0.3s;
             font-size: 1.1em;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         button:hover {
             background-color: #17a648;
@@ -108,7 +108,7 @@ index_template = """
             border-radius: 8px;
             padding: 15px;
             text-align: left;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s;
         }
         .card:hover {
@@ -124,10 +124,10 @@ index_template = """
             margin: 5px 0;
         }
         @keyframes scroll {
-            0% { transform: translateX(0 ); }
+            0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
         }
-    </style>
+ </style>
 </head>
 <body>
     <div class="container">
@@ -197,8 +197,8 @@ send_song_template = """
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f4f1e6;
-            color: #3a3a3a;
+            background-color: #e9ecef;
+            color: #343a40;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -210,21 +210,21 @@ send_song_template = """
             width: 100%;
             padding: 20px;
             text-align: center;
-            background: rgba(255, 255, 255, 0.9);
+            background: #ffffff;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
         h1 {
             margin-bottom: 20px;
             font-size: 2.5em;
             color: #1DB954;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
         .form-container {
             background: #fff;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
         form label {
@@ -335,8 +335,8 @@ browse_template = """
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f4f1e6;
-            color: #3a3a3a;
+            background-color: #e9ecef;
+            color: #343a40;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -348,15 +348,15 @@ browse_template = """
             width: 100%;
             padding: 20px;
             text-align: center;
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: #ffffff;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
         h1 {
             margin-bottom: 20px;
             font-size: 2.5em;
             color: #1DB954;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
         form label {
             display: block;
@@ -369,13 +369,13 @@ browse_template = """
             background: #f0f0f0;
             color: #333;
             border: 1px solid #ccc;
-            border -radius: 4px;
+            border-radius: 4px;
             margin-bottom: 15px;
         }
         form button {
             background-color: #1DB954;
             color: #fff;
-            padding: 12px;
+            padding:  12px;
             width: 100%;
             border: none;
             border-radius: 4px;
@@ -392,7 +392,7 @@ browse_template = """
             border-radius: 8px;
             cursor: pointer;
             transition: transform 0.3s;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         .message:hover {
             transform: scale(1.02);
@@ -448,8 +448,8 @@ message_template = """
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f4f1e6;
-            color: #3a3a3a;
+            background-color: #e9ecef;
+            color: #343a40;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -461,22 +461,22 @@ message_template = """
             width: 100%;
             padding: 20px;
             text-align: center;
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: #ffffff;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
         h1 {
             margin-bottom: 20px;
             font-size: 2.5em;
             color: #1DB954;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
         .message {
             background: #fff;
             padding: 20px;
             border-radius: 8px;
             margin: 20px 0;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         .message p {
             margin: 5px 0;
@@ -509,7 +509,7 @@ message_template = """
             <p><strong>To:</strong> {{ recipient }}</p>
             <p><strong>Message:</strong> {{ message }}</p>
             {% if spotify_url %}
-                <iframe src="{{ spotify_url.replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
+                <iframe src="{{ spotify_url.replace('open.spotify.com', 'embed.spotify .com') }}" frameborder="0" allow="encrypted-media"></iframe>
             {% endif %}
         </div>
         <button onclick="window.location.href='/'">Back to Home</button>
