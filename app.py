@@ -181,7 +181,7 @@ send_song_template = """
                     const item = document.createElement("div");
                     item.textContent = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
                     const albumImage = document.createElement("img");
-                    albumImage.src = track.album.images ```python
+                    albumImage.src = track.album.images 
 [0].url;  // Get the album image
                     albumImage.style.width = "50px"; // Set a width for the image
                     albumImage.style.marginRight = "10px"; // Add some margin
