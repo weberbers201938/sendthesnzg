@@ -20,7 +20,8 @@ def init_db():
                 recipient TEXT,
                 message TEXT,
                 spotify_url TEXT,
-                hearts INTEGER DEFAULT 0  -- New column for hearts
+                artist_name TEXT,
+                artist_image TEXT
             )
         """)
     conn.close()
@@ -48,25 +49,21 @@ index_template = """
     <title>Send the Song</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #121212; color: #f2f2f2; display: flex; flex-direction: column; align-items: center; height: 100vh; margin: 0; }
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #f2f2f2; display: flex; flex-direction: column; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
         .container { max-width: 500px; width: 100%; padding: 20px; text-align: center; }
         button { background-color: #1DB954; color: #fff; padding: 12px; width: 100%; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; }
         button:hover { background-color: #17a648; }
         .slider { width: 100%; overflow: hidden; position: relative; }
-        .slider-container { display: flex; animation: slide 20s linear infinite; }
-        .card { min-width: 300px; margin: 10px; background: #1f1f1f; border-radius: 8px; padding: 15px; }
-        .card img { width: 100%; height: auto; border-radius: 8px; }
-        .card iframe { width: 100%; height: 80px; border-radius: 8px; }
+        .slider-container { display: flex; animation: scroll 60s linear infinite; } /* Adjusted duration for slower scrolling */
+        .card { min-width: 300px; margin: 10px; background: #1f1f1f; border-radius: 8px; padding: 15px; text-align: left; cursor: pointer; }
+        .card img { width: 50px; height: auto; border-radius: 8px; margin-right: 10px; vertical-align: middle; }
+        .card-content { display: flex; align-items: center; }
+        .card-title { font-size: 1.1em; color: #fff; }
+        .card-artist { font-size: 0.9em; color: #bbb; }
 
-        @keyframes slide {
+        @keyframes scroll {
             0% { transform: translateX(0); }
-            20% { transform: translateX(0); }
-            25% { transform: translateX(-100%); }
-            45% { transform: translateX(-100%); }
-            50% { transform: translateX(-200%); }
-            70% { transform: translateX(-200%); }
-            75% { transform: translateX(-300%); }
-            100% { transform: translateX(-300%); }
+            100% { transform: translateX(-50%); } /* Adjust this value based on the number of cards */
         }
     </style>
 </head>
@@ -80,22 +77,30 @@ index_template = """
     <div class="slider">
         <div class="slider-container" id="sliderContainer">
             {% for msg in messages %}
-                <div class="card">
-                    <p><strong>To:</strong> {{ msg[0] }}</p>
-                    <p>{{ msg[1] }}</p>
-                    {% if msg[2] %}
-                        <iframe src="{{ msg[2].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
-                    {% endif %}
+                <div class="card" onclick="window.location.href='/message/{{ msg [0] }}'">
+                    <div class="card-content">
+                        {% if msg[3] %}
+                            <img src="{{ msg[4] }}" alt="Artist Image">
+                        {% endif %}
+                        <div>
+                            <p class="card-title">{{ msg[1] }}</p>
+                            <p class="card-artist">{{ msg[3] }} - {{ msg[2] }}</p>
+                        </div>
+                    </div>
                 </div>
             {% endfor %}
             <!-- Duplicate the cards for infinite effect -->
             {% for msg in messages %}
-                <div class="card">
-                    <p><strong> To:</strong> {{ msg[0] }}</p>
-                    <p>{{ msg[1] }}</p>
-                    {% if msg[2] %}
-                        <iframe src="{{ msg[2].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
-                    {% endif %}
+                <div class="card" onclick="window.location.href='/message/{{ msg[0] }}'">
+                    <div class="card-content">
+                        {% if msg[3] %}
+                            <img src="{{ msg[4] }}" alt="Artist Image">
+                        {% endif %}
+                        <div>
+                            <p class="card-title">{{ msg[1] }}</p>
+                            <p class="card-artist">{{ msg[3] }} - {{ msg[2] }}</p>
+                        </div>
+                    </div>
                 </div>
             {% endfor %}
         </div>
@@ -163,6 +168,8 @@ send_song_template = """
                 <input type="text" id="song_search" placeholder="Search for a song" oninput="searchSpotifySongs(this.value)">
                 <div id="songSuggestions"></div>
                 <input type="hidden" name="spotify_url" id="spotify_url">
+                <input type="hidden" name="artist _image" id="artist_image">
+                <input type="hidden" name="artist_name" id="artist_name">
 
                 <button type="submit">Submit Message</button>
             </form>
@@ -181,13 +188,14 @@ send_song_template = """
                     const item = document.createElement("div");
                     item.textContent = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
                     const albumImage = document.createElement("img");
-                    albumImage.src = track.album.images 
-[0].url;  // Get the album image
+                    albumImage.src = track.album.images[0].url; // Get the album image
                     albumImage.style.width = "50px"; // Set a width for the image
                     albumImage.style.marginRight = "10px"; // Add some margin
                     item.prepend(albumImage); // Add the image to the suggestion item
                     item.onclick = () => {
                         document.getElementById("spotify_url").value = track.external_urls.spotify;
+                        document.getElementById("artist_image").value = track.artists[0].images[0].url; // Get artist image
+                        document.getElementById("artist_name").value = track.artists[0].name; // Get artist name
                         suggestions.style.display = "none";
                     };
                     suggestions.appendChild(item);
@@ -214,7 +222,7 @@ browse_template = """
         form input { width: 100%; padding: 12px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; margin-bottom: 15px; }
         form button { background-color: #1DB954; color: #fff; padding: 12px; width: 100%; border: none; border-radius: 4px; cursor: pointer; }
         form button:hover { background-color: #17a648; }
-        .message { margin: 20px 0; background: #333; padding: 15px; border-radius: 8px; }
+        .message { margin: 20px 0; background: #333; padding: 15px; border-radius: 8px; cursor: pointer; }
         .message p { margin: 5px 0; color: #bbb; }
         .message iframe { width: 100%; height: 80px; border-radius: 8px; }
     </style>
@@ -231,16 +239,12 @@ browse_template = """
         <div id="messages">
             {% if messages %}
                 {% for msg in messages %}
-                    <div class="message">
-                        <p><strong>To:</strong> {{ msg[0] }}</p>
-                        <p>{{ msg[1] }}</p>
-                        {% if msg[2] %}
-                            <iframe src="{{ msg[2].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
+                    <div class="message" onclick="window.location.href='/message/{{ msg[0] }}'">
+                        <p><strong>To:</strong> {{ msg[1] }}</p>
+                        <p>{{ msg[2] }}</p>
+                        {% if msg[3] %}
+                            <iframe src="{{ msg[3].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
                         {% endif %}
-                        <p>
-                            <span id="hearts-{{ loop.index }}">{{ msg[4] }}</span> ❤️
-                            <button onclick="reactToMessage('{{ msg[0] }}', {{ loop.index }})">Heart</button>
-                        </p>
                     </div>
                 {% endfor %}
             {% else %}
@@ -248,29 +252,60 @@ browse_template = """
             {% endif %}
         </div>
     </div>
-
-    <script>
-        async function reactToMessage(recipient, index) {
-            const response = await fetch(`/react?recipient=${encodeURIComponent(recipient)}`, {
-                method: 'POST'
-            });
-            const result = await response.json();
-            if (result.success) {
-                const heartsElement = document.getElementById(`hearts-${index}`);
-                heartsElement.textContent = parseInt(heartsElement.textContent) + 1; // Increment the heart count
-            }
-        }
-    </script>
 </body>
 </html>
 """
+
+message_template = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    ```html
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Details</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #f2f2f2; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { max-width: 600px; width: 100%; padding: 20px; text-align: center; background-color: #1f1f1f; border-radius: 8px; }
+        .message { background: #333; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .message p { margin: 5px 0; color: #bbb; }
+        .message iframe { width: 100%; height: 80px; border-radius: 8px; }
+        .artist-image { width: 100px; height: auto; border-radius: 8px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Message Details</h1>
+        <div class="message">
+            <img src="{{ artist_image }}" alt="Artist Image" class="artist-image">
+            <p><strong>To:</strong> {{ recipient }}</p>
+            <p><strong>Message:</strong> {{ message }}</p>
+            {% if spotify_url %}
+                <iframe src="{{ spotify_url.replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
+            {% endif %}
+        </div>
+        <button onclick="window.location.href='/'">Back to Home</button>
+    </div>
+</body>
+</html>
+"""
+
+@app.route('/message/<int:message_id>')
+def message_details(message_id):
+    with sqlite3.connect("messages.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT recipient, message, spotify_url, artist_name, artist_image FROM messages WHERE id = ?", (message_id,))
+        message = cursor.fetchone()
+    if message:
+        return render_template_string(message_template, recipient=message[0], message=message[1], spotify_url=message[2], artist_image=message[4])
+    return "Message not found", 404
 
 @app.route('/')
 def index():
     messages = []  # Load messages from the database to display in the slider
     with sqlite3.connect("messages.db") as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT recipient, message, spotify_url, hearts FROM messages")
+        cursor.execute("SELECT id, message, spotify_url, artist_name, artist_image FROM messages")
         messages = cursor.fetchall()
     return render_template_string(index_template, messages=messages)
 
@@ -282,15 +317,16 @@ def send_song():
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    
     recipient = request.form.get("to")
     message = request.form.get("message")
     spotify_url = request.form.get("spotify_url")
+    artist_image = request.form.get("artist_image")
+    artist_name = request.form.get("artist_name")
 
     with sqlite3.connect("messages.db") as conn:
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO messages (recipient, message, spotify_url) VALUES (?, ?, ?)",
-                       (recipient, message, spotify_url))
+        cursor.execute("INSERT INTO messages (recipient, message, spotify_url, artist_name, artist_image) VALUES (?, ?, ?, ?, ?)",
+                       (recipient, message, spotify_url, artist_name, artist_image))
     return redirect(url_for('send_song'))
 
 @app.route('/browse', methods=['GET'])
@@ -300,7 +336,7 @@ def browse():
     with sqlite3.connect("messages.db") as conn:
         cursor = conn.cursor()
         if recipient:
-            cursor.execute("SELECT recipient, message, spotify_url, hearts FROM messages WHERE recipient LIKE ?", ('%' + recipient + '%',))
+            cursor.execute("SELECT id, recipient, message, spotify_url FROM messages WHERE recipient LIKE ?", ('%' + recipient + '%',))
             messages = cursor.fetchall()
     return render_template_string(browse_template, messages=messages)
 
@@ -317,15 +353,6 @@ def search_song():
         response = requests.get(f'https://api.spotify.com/v1/search?q={query}&type=track', headers=headers)
         return jsonify(response.json())
     return jsonify({"error": "No query provided"})
-
-@app.route('/react', methods=['POST'])
-def react():
-    recipient = request.args.get("recipient")
-    with sqlite3.connect("messages.db") as conn:
-        cursor = conn.cursor()
-        cursor.execute("UPDATE messages SET hearts = hearts + 1 WHERE recipient = ?", (recipient,))
-        conn.commit()
-    return jsonify({"success": True})
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
