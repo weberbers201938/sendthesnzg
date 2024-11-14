@@ -20,7 +20,7 @@ def init_db():
                 recipient TEXT,
                 message TEXT,
                 spotify_url TEXT,
-                likes INTEGER DEFAULT 0  -- Add likes column
+                hearts INTEGER DEFAULT 0  -- New column for hearts
             )
         """)
     conn.close()
@@ -91,7 +91,7 @@ index_template = """
             <!-- Duplicate the cards for infinite effect -->
             {% for msg in messages %}
                 <div class="card">
-                    <p><strong>To:</strong> {{ msg[0] }}</p>
+                    <p><strong> To:</strong> {{ msg[0] }}</p>
                     <p>{{ msg[1] }}</p>
                     {% if msg[2] %}
                         <iframe src="{{ msg[2].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
@@ -181,9 +181,9 @@ send_song_template = """
                     const item = document.createElement("div");
                     item.textContent = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
                     const albumImage = document.createElement("img");
-                    albumImage.src = track.album.images[0].url; // Get the album image
-                    albumImage.style.width ```python
-= "50px"; // Set a width for the image
+                    albumImage.src = track.album.images ```python
+[0].url;  // Get the album image
+                    albumImage.style.width = "50px"; // Set a width for the image
                     albumImage.style.marginRight = "10px"; // Add some margin
                     item.prepend(albumImage); // Add the image to the suggestion item
                     item.onclick = () => {
@@ -236,8 +236,11 @@ browse_template = """
                         <p>{{ msg[1] }}</p>
                         {% if msg[2] %}
                             <iframe src="{{ msg[2].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
-                            <button onclick="likeMessage({{ msg[3] }})">❤️ {{ msg[4] }}</button>  <!-- Add like button -->
                         {% endif %}
+                        <p>
+                            <span id="hearts-{{ loop.index }}">{{ msg[4] }}</span> ❤️
+                            <button onclick="reactToMessage('{{ msg[0] }}', {{ loop.index }})">Heart</button>
+                        </p>
                     </div>
                 {% endfor %}
             {% else %}
@@ -247,18 +250,15 @@ browse_template = """
     </div>
 
     <script>
-        function likeMessage(messageId) {
-            fetch(`/like_message/${messageId}`, {
+        async function reactToMessage(recipient, index) {
+            const response = await fetch(`/react?recipient=${encodeURIComponent(recipient)}`, {
                 method: 'POST'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Message liked!');
-                    location.reload(); // Reload the page to show updated likes
-                }
-            })
-            .catch(error => console.error('Error liking message:', error));
+            });
+            const result = await response.json();
+            if (result.success) {
+                const heartsElement = document.getElementById(`hearts-${index}`);
+                heartsElement.textContent = parseInt(heartsElement.textContent) + 1; // Increment the heart count
+            }
         }
     </script>
 </body>
@@ -270,7 +270,7 @@ def index():
     messages = []  # Load messages from the database to display in the slider
     with sqlite3.connect("messages.db") as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT recipient, message, spotify_url, id, likes FROM messages")
+        cursor.execute("SELECT recipient, message, spotify_url, hearts FROM messages")
         messages = cursor.fetchall()
     return render_template_string(index_template, messages=messages)
 
@@ -282,6 +282,7 @@ def send_song():
 
 @app.route('/submit', methods=['POST'])
 def submit():
+    ```python
     recipient = request.form.get("to")
     message = request.form.get("message")
     spotify_url = request.form.get("spotify_url")
@@ -299,7 +300,7 @@ def browse():
     with sqlite3.connect("messages.db") as conn:
         cursor = conn.cursor()
         if recipient:
-            cursor.execute("SELECT recipient, message, spotify_url, id, likes FROM messages WHERE recipient LIKE ?", ('%' + recipient + '%',))
+            cursor.execute("SELECT recipient, message, spotify_url, hearts FROM messages WHERE recipient LIKE ?", ('%' + recipient + '%',))
             messages = cursor.fetchall()
     return render_template_string(browse_template, messages=messages)
 
@@ -317,13 +318,14 @@ def search_song():
         return jsonify(response.json())
     return jsonify({"error": "No query provided"})
 
-@app.route('/like_message/<int:message_id>', methods=['POST'])
-def like_message(message_id):
+@app.route('/react', methods=['POST'])
+def react():
+    recipient = request.args.get("recipient")
     with sqlite3.connect("messages.db") as conn:
         cursor = conn.cursor()
-        cursor.execute("UPDATE messages SET likes = likes + 1 WHERE id = ?", (message_id,))
+        cursor.execute("UPDATE messages SET hearts = hearts + 1 WHERE recipient = ?", (recipient,))
         conn.commit()
-    return jsonify(success=True)
+    return jsonify({"success": True})
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
