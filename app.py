@@ -45,12 +45,13 @@ index_template = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Send the Song</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #e9ecef;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f8f9fa;
             color: #343a40;
             display: flex;
             flex-direction: column;
@@ -72,6 +73,7 @@ index_template = """
         h1 {
             margin-bottom: 20px;
             font-size: 2.5em;
+            font-family: 'Playfair Display', serif;
             color: #1DB954;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
@@ -119,7 +121,7 @@ index_template = """
             color: #333;
         }
         .card-message {
-            font-size: 0.9em;
+            font-size: 0.9 em;
             color: #555;
             margin: 5px 0;
         }
@@ -127,7 +129,7 @@ index_template = """
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
         }
- </style>
+    </style>
 </head>
 <body>
     <div class="container">
@@ -192,12 +194,12 @@ send_song_template = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Send The Song</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #e9ecef;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f8f9fa;
             color: #343a40;
             display: flex;
             justify-content: center;
@@ -217,8 +219,8 @@ send_song_template = """
         h1 {
             margin-bottom: 20px;
             font-size: 2.5em;
+            font-family: 'Playfair Display', serif;
             color: #1DB954;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
         .form-container {
             background: #fff;
@@ -243,7 +245,7 @@ send_song_template = """
         }
         form button {
             background-color: #1DB954;
-            color: #fff;
+ color: #fff;
             padding: 12px;
             width: 100%;
             border: none;
@@ -305,13 +307,13 @@ send_song_template = """
                     item.textContent = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
                     const tracksImage = document.createElement("img");
                     tracksImage.src = track.album.images[0].url;  // Get the album image
-                    tracksImage.style.width = "1em"; // Set a width for the image
+                    tracksImage.style.width = "3em"; // Set a width for the image
                     tracksImage.style.marginRight = "10px"; // Add some margin
                     tracksImage.style.verticalAlign = "middle";
                     item.prepend(tracksImage);
                     item.onclick = () => {
                         document.getElementById("spotify_url").value = track.external_urls.spotify;
-                        document.getElementById("song_search").value = track.name; // Populate message with song name
+                        document.getElementById("song_search").value = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
                         suggestions.style.display = "none";
                     };
                     suggestions.appendChild(item);
@@ -331,11 +333,12 @@ browse_template = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Browse Messages</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #e9ecef;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f8f9fa;
             color: #343a40;
             display: flex;
             justify-content: center;
@@ -355,8 +358,8 @@ browse_template = """
         h1 {
             margin-bottom: 20px;
             font-size: 2.5em;
+            font-family: 'Playfair Display', serif;
             color: #1DB954;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
         form label {
             display: block;
@@ -366,7 +369,7 @@ browse_template = """
         form input {
             width: 100%;
             padding: 12px;
-            background: #f0f0f0;
+ background: #f0f0f0;
             color: #333;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -375,7 +378,7 @@ browse_template = """
         form button {
             background-color: #1DB954;
             color: #fff;
-            padding:  12px;
+            padding: 12px;
             width: 100%;
             border: none;
             border-radius: 4px;
@@ -444,11 +447,12 @@ message_template = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Message Details</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #e9ecef;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f8f9fa;
             color: #343a40;
             display: flex;
             justify-content: center;
@@ -468,8 +472,8 @@ message_template = """
         h1 {
             margin-bottom: 20px;
             font-size: 2.5em;
+            font-family: 'Playfair Display', serif;
             color: #1DB954;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
         .message {
             background: #fff;
@@ -500,7 +504,7 @@ message_template = """
         button:hover {
             background-color: #17a648;
         }
-    </style>
+</style>
 </head>
 <body>
     <div class="container">
@@ -508,8 +512,8 @@ message_template = """
         <div class="message">
             <p><strong>To:</strong> {{ recipient }}</p>
             <p><strong>Message:</strong> {{ message }}</p>
-            {% if spotify_url %}
-                <iframe src="{{ spotify_url.replace('open.spotify.com', 'embed.spotify .com') }}" frameborder="0" allow="encrypted-media"></iframe>
+            {% if msg[3] %}
+                <iframe src="{{ msg[3].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
             {% endif %}
         </div>
         <button onclick="window.location.href='/'">Back to Home</button>
