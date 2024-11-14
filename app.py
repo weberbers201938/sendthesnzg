@@ -282,7 +282,7 @@ def send_song():
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    ```python
+    
     recipient = request.form.get("to")
     message = request.form.get("message")
     spotify_url = request.form.get("spotify_url")
