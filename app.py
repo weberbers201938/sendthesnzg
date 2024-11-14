@@ -19,8 +19,7 @@ def init_db():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 recipient TEXT,
                 message TEXT,
-                spotify_url TEXT,
-                artist_image TEXT
+                spotify_url TEXT
             )
         """)
     conn.close()
@@ -51,8 +50,8 @@ index_template = """
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #121212;
-            color: #f2f2f2;
+            background-color: #f4f1e6;
+            color: #3a3a3a;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -66,11 +65,15 @@ index_template = """
             padding: 20px;
             text-align: center;
             margin-top: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
         h1 {
             margin-bottom: 20px;
             font-size: 2.5em;
             color: #1DB954;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         }
         button {
             background-color: #1DB954;
@@ -83,9 +86,11 @@ index_template = """
             margin-top: 10px;
             transition: background-color 0.3s;
             font-size: 1.1em;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
         button:hover {
             background-color: #17a648;
+            transform: translateY(-2px);
         }
         .slider {
             width: 100%;
@@ -99,11 +104,11 @@ index_template = """
         .card {
             min-width: 300px;
             margin: 10px;
-            background: #1f1f1f;
+            background: #fff;
             border-radius: 8px;
             padding: 15px;
             text-align: left;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s;
         }
         .card:hover {
@@ -111,15 +116,15 @@ index_template = """
         }
         .card-title {
             font-size: 1.2em;
-            color: #fff;
+            color: #333;
         }
         .card-message {
             font-size: 0.9em;
-            color: #bbb;
+            color: #555;
             margin: 5px 0;
         }
         @keyframes scroll {
-            0% { transform: translateX(0); }
+            0% { transform: translateX(0 ); }
             100% { transform: translateX(-50%); }
         }
     </style>
@@ -134,7 +139,7 @@ index_template = """
     <div class="slider">
         <div class="slider-container" id="sliderContainer">
             {% for msg in messages %}
-                < div class="card" onclick="window.location.href='/message/{{ msg[0] }}'">
+                <div class="card" onclick="window.location.href='/message/{{ msg[0] }}'">
                     <p class="card-title"><strong>To:</strong> {{ msg[1] }}</p>
                     <p class="card-message">{{ msg[2] }}</p>
                     {% if msg[3] %}
@@ -142,7 +147,6 @@ index_template = """
                     {% endif %}
                 </div>
             {% endfor %}
-            <!-- Duplicate the cards for infinite effect -->
             {% for msg in messages %}
                 <div class="card" onclick="window.location.href='/message/{{ msg[0] }}'">
                     <p class="card-title"><strong>To:</strong> {{ msg[1] }}</p>
@@ -193,8 +197,8 @@ send_song_template = """
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #121212;
-            color: #f2f2f2;
+            background-color: #f4f1e6;
+            color: #3a3a3a;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -206,30 +210,34 @@ send_song_template = """
             width: 100%;
             padding: 20px;
             text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
         h1 {
             margin-bottom: 20px;
             font-size: 2.5em;
             color: #1DB954;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         }
         .form-container {
-            background: #1f1f1f;
+            background: #fff;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             margin-bottom: 20px;
         }
         form label {
             display: block;
             margin: 10px 0 5px;
-            color: #bbb;
+            color: #555;
         }
         form input, form textarea {
             width: 100%;
             padding: 12px;
-            background: #333;
-            color: #fff;
-            border: 1px solid #555;
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
             border-radius: 4px;
             margin-bottom: 15px;
         }
@@ -247,7 +255,7 @@ send_song_template = """
             background-color: #17a648;
         }
         #songSuggestions {
-            background: #333;
+            background: #f0f0f0;
             border-radius: 4px;
             max-height: 150px;
             overflow-y: auto;
@@ -256,10 +264,10 @@ send_song_template = """
         #songSuggestions div {
             padding: 10px;
             cursor: pointer;
-            color: #bbb;
+            color: #555;
         }
         #songSuggestions div:hover {
-            background: #444;
+            background: #ddd;
         }
     </style>
 </head>
@@ -278,7 +286,6 @@ send_song_template = """
                 <input type="text" id="song_search" placeholder="Search for a song" oninput="searchSpotifySongs(this.value)">
                 <div id="songSuggestions"></div>
                 <input type="hidden" name="spotify_url" id="spotify_url">
-                <input type="hidden" name="artist_image" id="artist_image">
 
                 <button type="submit">Submit Message</button>
             </form>
@@ -296,9 +303,14 @@ send_song_template = """
                 results.tracks.items.forEach(track => {
                     const item = document.createElement("div");
                     item.textContent = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
+                    const tracksImage = document.createElement("img");
+                    tracksImage.src = track.album.images[0].url;  // Get the album image
+                    tracksImage.style.width = "1em"; // Set a width for the image
+                    tracksImage.style.marginRight = "10px"; // Add some margin
+                    tracksImage.style.verticalAlign = "middle";
+                    item.prepend(tracksImage);
                     item.onclick = () => {
                         document.getElementById("spotify_url").value = track.external_urls.spotify;
-                        document.getElementById("artist_image").value = track.artists[0].images[0].url; // Get artist image
                         document.getElementById("message").value = track.name; // Populate message with song name
                         suggestions.style.display = "none";
                     };
@@ -323,8 +335,8 @@ browse_template = """
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #121212;
-            color: #f2f2f2;
+            background-color: #f4f1e6;
+            color: #3a3a3a;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -336,27 +348,28 @@ browse_template = """
             width: 100%;
             padding: 20px;
             text-align: center;
-            background-color: #1f1f1f;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
         h1 {
             margin-bottom: 20px;
             font-size: 2.5em;
             color: #1DB954;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         }
         form label {
             display: block;
             margin: 15px 0 5px;
-            color: #bbb;
+            color: #555;
         }
         form input {
             width: 100%;
             padding: 12px;
-            background: #333;
-            color: #fff;
-            border: 1px solid #555;
-            border-radius: 4px;
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            border -radius: 4px;
             margin-bottom: 15px;
         }
         form button {
@@ -374,18 +387,19 @@ browse_template = """
         }
         .message {
             margin: 20px 0;
-            background: #333;
+            background: #fff;
             padding: 15px;
             border-radius: 8px;
             cursor: pointer;
             transition: transform 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
         .message:hover {
             transform: scale(1.02);
         }
         .message p {
             margin: 5px 0;
-            color: #bbb;
+            color: #555;
         }
         .message iframe {
             width: 100%;
@@ -434,8 +448,8 @@ message_template = """
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #121212;
-            color: #f2f2f2;
+            background-color: #f4f1e6;
+            color: #3a3a3a;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -447,24 +461,26 @@ message_template = """
             width: 100%;
             padding: 20px;
             text-align: center;
-            background-color: #1f1f1f;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
         h1 {
             margin-bottom: 20px;
             font-size: 2.5em;
             color: #1DB954;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         }
         .message {
-            background: #333;
+            background: #fff;
             padding: 20px;
             border-radius: 8px;
             margin: 20px 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
         .message p {
             margin: 5px 0;
-            color: #bbb;
+            color: #555;
         }
         .message iframe {
             width: 100%;
@@ -532,12 +548,11 @@ def submit():
     recipient = request.form.get("to")
     message = request.form.get("message")
     spotify_url = request.form.get("spotify_url")
-    artist_image = request.form.get("artist_image")
 
     with sqlite3.connect("messages.db") as conn:
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO messages (recipient, message, spotify_url, artist_image) VALUES (?, ?, ?, ?)",
-                       (recipient, message, spotify_url, artist_image))
+        cursor.execute("INSERT INTO messages (recipient, message, spotify_url) VALUES (?, ?, ?)",
+                       (recipient, message, spotify_url))
     return redirect(url_for('send_song'))
 
 @app.route('/browse', methods=['GET'])
