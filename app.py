@@ -20,7 +20,6 @@ def init_db():
                 recipient TEXT,
                 message TEXT,
                 spotify_url TEXT,
-                artist_name TEXT,
                 artist_image TEXT
             )
         """)
@@ -47,23 +46,81 @@ index_template = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Send the Song</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #121212; color: #f2f2f2; display: flex; flex-direction: column; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
-        .container { max-width: 500px; width: 100%; padding: 20px; text-align: center; }
-        button { background-color: #1DB954; color: #fff; padding: 12px; width: 100%; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; }
-        button:hover { background-color: #17a648; }
-        .slider { width: 100%; overflow: hidden; position: relative; }
-        .slider-container { display: flex; animation: scroll 60s linear infinite; } /* Adjusted duration for slower scrolling */
-        .card { min-width: 300px; margin: 10px; background: #1f1f1f; border-radius: 8px; padding: 15px; text-align: left; cursor: pointer; }
-        .card img { width: 50px; height: auto; border-radius: 8px; margin-right: 10px; vertical-align: middle; }
-        .card-content { display: flex; align-items: center; }
-        .card-title { font-size: 1.1em; color: #fff; }
-        .card-artist { font-size: 0.9em; color: #bbb; }
-
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #121212;
+            color: #f2f2f2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            color: #1DB954;
+        }
+        button {
+            background-color: #1DB954;
+            color: #fff;
+            padding: 12px;
+            width: 100%;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+            font-size: 1.1em;
+        }
+        button:hover {
+            background-color: #17a648;
+        }
+        .slider {
+            width: 100%;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        .slider-container {
+            display: flex;
+            animation: scroll 30s linear infinite;
+        }
+        .card {
+            min-width: 300px;
+            margin: 10px;
+            background: #1f1f1f;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: left;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .card-title {
+            font-size: 1.2em;
+            color: #fff;
+        }
+        .card-message {
+            font-size: 0.9em;
+            color: #bbb;
+            margin: 5px 0;
+        }
         @keyframes scroll {
             0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); } /* Adjust this value based on the number of cards */
+            100% { transform: translateX(-50%); }
         }
     </style>
 </head>
@@ -77,30 +134,22 @@ index_template = """
     <div class="slider">
         <div class="slider-container" id="sliderContainer">
             {% for msg in messages %}
-                <div class="card" onclick="window.location.href='/message/{{ msg [0] }}'">
-                    <div class="card-content">
-                        {% if msg[3] %}
-                            <img src="{{ msg[4] }}" alt="Artist Image">
-                        {% endif %}
-                        <div>
-                            <p class="card-title">{{ msg[1] }}</p>
-                            <p class="card-artist">{{ msg[3] }} - {{ msg[2] }}</p>
-                        </div>
-                    </div>
+                < div class="card" onclick="window.location.href='/message/{{ msg[0] }}'">
+                    <p class="card-title"><strong>To:</strong> {{ msg[1] }}</p>
+                    <p class="card-message">{{ msg[2] }}</p>
+                    {% if msg[3] %}
+                        <iframe src="{{ msg[3].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
+                    {% endif %}
                 </div>
             {% endfor %}
             <!-- Duplicate the cards for infinite effect -->
             {% for msg in messages %}
                 <div class="card" onclick="window.location.href='/message/{{ msg[0] }}'">
-                    <div class="card-content">
-                        {% if msg[3] %}
-                            <img src="{{ msg[4] }}" alt="Artist Image">
-                        {% endif %}
-                        <div>
-                            <p class="card-title">{{ msg[1] }}</p>
-                            <p class="card-artist">{{ msg[3] }} - {{ msg[2] }}</p>
-                        </div>
-                    </div>
+                    <p class="card-title"><strong>To:</strong> {{ msg[1] }}</p>
+                    <p class="card-message">{{ msg[2] }}</p>
+                    {% if msg[3] %}
+                        <iframe src="{{ msg[3].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>
@@ -139,18 +188,79 @@ send_song_template = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Send The Song</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #121212; color: #f2f2f2; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { max-width: 500px; width: 100%; padding: 20px; text-align: center; }
-        .form-container { background: #1f1f1f; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); margin-bottom: 20px; }
-        form label { display: block; margin: 10px 0 5px; color: #bbb; }
-        form input, form textarea { width: 100%; padding: 12px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; }
-        form button { background-color: #1DB954; color: #fff; padding: 12px; width: 100%; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; }
-        form button:hover { background-color: #17a648; }
-        #songSuggestions { background: #333; border-radius: 4px; max-height: 150px; overflow-y: auto; display: none; }
-        #songSuggestions div { padding: 10px; cursor: pointer; color: #bbb; }
-        #songSuggestions div:hover { background: #444; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #121212;
+            color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            color: #1DB954;
+        }
+        .form-container {
+            background: #1f1f1f;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+        form label {
+            display: block;
+            margin: 10px 0 5px;
+            color: #bbb;
+        }
+        form input, form textarea {
+            width: 100%;
+            padding: 12px;
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        form button {
+            background-color: #1DB954;
+            color: #fff;
+            padding: 12px;
+            width: 100%;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        form button:hover {
+            background-color: #17a648;
+        }
+        #songSuggestions {
+            background: #333;
+            border-radius: 4px;
+            max-height: 150px;
+            overflow-y: auto;
+            display: none;
+        }
+        #songSuggestions div {
+            padding: 10px;
+            cursor: pointer;
+            color: #bbb;
+        }
+        #songSuggestions div:hover {
+            background: #444;
+        }
     </style>
 </head>
 <body>
@@ -158,7 +268,7 @@ send_song_template = """
         <h1>Send The Song</h1>
         <div class="form-container">
             <form action="{{ url_for('submit') }}" method="POST">
-                <label for="to">To:</label>
+                <label for="to"> To:</label>
                 <input type="text" name="to" id="to" placeholder="Recipient's name" required>
 
                 <label for="message">Message:</label>
@@ -168,8 +278,7 @@ send_song_template = """
                 <input type="text" id="song_search" placeholder="Search for a song" oninput="searchSpotifySongs(this.value)">
                 <div id="songSuggestions"></div>
                 <input type="hidden" name="spotify_url" id="spotify_url">
-                <input type="hidden" name="artist _image" id="artist_image">
-                <input type="hidden" name="artist_name" id="artist_name">
+                <input type="hidden" name="artist_image" id="artist_image">
 
                 <button type="submit">Submit Message</button>
             </form>
@@ -187,15 +296,10 @@ send_song_template = """
                 results.tracks.items.forEach(track => {
                     const item = document.createElement("div");
                     item.textContent = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
-                    const albumImage = document.createElement("img");
-                    albumImage.src = track.album.images[0].url; // Get the album image
-                    albumImage.style.width = "50px"; // Set a width for the image
-                    albumImage.style.marginRight = "10px"; // Add some margin
-                    item.prepend(albumImage); // Add the image to the suggestion item
                     item.onclick = () => {
                         document.getElementById("spotify_url").value = track.external_urls.spotify;
                         document.getElementById("artist_image").value = track.artists[0].images[0].url; // Get artist image
-                        document.getElementById("artist_name").value = track.artists[0].name; // Get artist name
+                        document.getElementById("message").value = track.name; // Populate message with song name
                         suggestions.style.display = "none";
                     };
                     suggestions.appendChild(item);
@@ -215,16 +319,79 @@ browse_template = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Browse Messages</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #121212; color: #f2f2f2; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { max-width: 600px; width: 100%; padding: 20px; text-align: center; background-color: #1f1f1f; border-radius: 8px; }
-        form label { display: block; margin: 15px 0 5px; color: #bbb; }
-        form input { width: 100%; padding: 12px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; margin-bottom: 15px; }
-        form button { background-color: #1DB954; color: #fff; padding: 12px; width: 100%; border: none; border-radius: 4px; cursor: pointer; }
-        form button:hover { background-color: #17a648; }
-        .message { margin: 20px 0; background: #333; padding: 15px; border-radius: 8px; cursor: pointer; }
-        .message p { margin: 5px 0; color: #bbb; }
-        .message iframe { width: 100%; height: 80px; border-radius: 8px; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #121212;
+            color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            background-color: #1f1f1f;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            color: #1DB954;
+        }
+        form label {
+            display: block;
+            margin: 15px 0 5px;
+            color: #bbb;
+        }
+        form input {
+            width: 100%;
+            padding: 12px;
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        form button {
+            background-color: #1DB954;
+            color: #fff;
+            padding: 12px;
+            width: 100%;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        form button:hover {
+            background-color: #17a648;
+        }
+        .message {
+            margin: 20px 0;
+            background: #333;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .message:hover {
+            transform: scale(1.02);
+        }
+        .message p {
+            margin: 5px 0;
+            color: #bbb;
+        }
+        .message iframe {
+            width: 100%;
+            height: 80px;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
@@ -261,23 +428,68 @@ message_template = """
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    ```html
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Message Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #121212; color: #f2f2f2; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { max-width: 600px; width: 100%; padding: 20px; text-align: center; background-color: #1f1f1f; border-radius: 8px; }
-        .message { background: #333; padding: 20px; border-radius: 8px; margin: 20px 0; }
-        .message p { margin: 5px 0; color: #bbb; }
-        .message iframe { width: 100%; height: 80px; border-radius: 8px; }
-        .artist-image { width: 100px; height: auto; border-radius: 8px; margin-bottom: 10px; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #121212;
+            color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            background-color: #1f1f1f;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            color: #1DB954;
+        }
+        .message {
+            background: #333;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .message p {
+            margin: 5px 0;
+            color: #bbb;
+        }
+        .message iframe {
+            width: 100%;
+            height: 80px;
+            border-radius: 8px;
+        }
+        button {
+            background-color: #1DB954;
+            color: #fff;
+            padding: 12px;
+            width: 100%;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #17a648;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Message Details</h1>
         <div class="message">
-            <img src="{{ artist_image }}" alt="Artist Image" class="artist-image">
             <p><strong>To:</strong> {{ recipient }}</p>
             <p><strong>Message:</strong> {{ message }}</p>
             {% if spotify_url %}
@@ -294,10 +506,10 @@ message_template = """
 def message_details(message_id):
     with sqlite3.connect("messages.db") as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT recipient, message, spotify_url, artist_name, artist_image FROM messages WHERE id = ?", (message_id,))
+        cursor.execute("SELECT recipient, message, spotify_url FROM messages WHERE id = ?", (message_id,))
         message = cursor.fetchone()
     if message:
-        return render_template_string(message_template, recipient=message[0], message=message[1], spotify_url=message[2], artist_image=message[4])
+        return render_template_string(message_template, recipient=message[0], message=message[1], spotify_url=message[2])
     return "Message not found", 404
 
 @app.route('/')
@@ -305,7 +517,7 @@ def index():
     messages = []  # Load messages from the database to display in the slider
     with sqlite3.connect("messages.db") as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT id, message, spotify_url, artist_name, artist_image FROM messages")
+        cursor.execute("SELECT id, recipient, message, spotify_url FROM messages")
         messages = cursor.fetchall()
     return render_template_string(index_template, messages=messages)
 
@@ -321,12 +533,11 @@ def submit():
     message = request.form.get("message")
     spotify_url = request.form.get("spotify_url")
     artist_image = request.form.get("artist_image")
-    artist_name = request.form.get("artist_name")
 
     with sqlite3.connect("messages.db") as conn:
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO messages (recipient, message, spotify_url, artist_name, artist_image) VALUES (?, ?, ?, ?, ?)",
-                       (recipient, message, spotify_url, artist_name, artist_image))
+        cursor.execute("INSERT INTO messages (recipient, message, spotify_url, artist_image) VALUES (?, ?, ?, ?)",
+                       (recipient, message, spotify_url, artist_image))
     return redirect(url_for('send_song'))
 
 @app.route('/browse', methods=['GET'])
