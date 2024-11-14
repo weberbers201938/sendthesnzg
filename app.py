@@ -129,6 +129,28 @@ index_template = """
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
         }
+        .vintage-popup {
+    border: 3px solid #b2967d;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.vintage-popup .swal2-timer-progress-bar {
+    background-color: #b2967d;
+}
+
+.swal2-title {
+    font-family: 'Georgia', serif;
+    font-size: 24px;
+    color: #3a2f2f;
+    text-shadow: 1px 1px 2px #b2967d;
+}
+
+.swal2-html-container {
+    font-family: 'Courier New', monospace;
+    color: #5a4b3e;
+    line-height: 1.5;
+}
     </style>
 </head>
 <body>
@@ -163,25 +185,39 @@ index_template = """
 
     <script>
         function confirmRedirect(route) {
-            Swal.fire({
-                title: 'Redirecting...',
-                text: 'You will be redirected in 3 seconds.',
-                timer: 3000,
-                timerProgressBar: true,
-                showCancelButton: false,
-                showConfirmButton: false,
-                willOpen: () => {
-                    Swal.showLoading()
-                },
-                onClose: () => {
-                    clearInterval(timerInterval)
-                }
-            }).then((result) => {
-                if (result.dismiss === Swal.DismissReason.timer) {
-                    window.location.href = `/${route}`;
-                }
-            });
+    Swal.fire({
+        title: '✨ Redirecting...',
+        html: '<p style="font-family: Georgia, serif; font-size: 18px; color: #3a2f2f;">You will be redirected in <b>3</b> seconds...</p>',
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#f9f2e7',
+        color: '#3a2f2f',
+        showCancelButton: false,
+        showConfirmButton: false,
+        width: '450px',
+        padding: '2rem',
+        customClass: {
+            popup: 'vintage-popup',
+        },
+        willOpen: () => {
+            const b = Swal.getHtmlContainer().querySelector('b');
+            let secondsLeft = 3;
+            const timerInterval = setInterval(() => {
+                secondsLeft -= 1;
+                b.textContent = secondsLeft;
+            }, 1000);
+
+            Swal.showLoading();
+        },
+        onClose: () => {
+            clearInterval(timerInterval);
         }
+    }).then((result) => {
+        if (result.dismiss === Swal.DismissReason.timer) {
+            window.location.href = `/${route}`;
+        }
+    });
+}
     </script>
 </body>
 </html>
