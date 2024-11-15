@@ -496,8 +496,7 @@ browse_template = """
                                 <img src="{{ msg[4] }}" class="album-image" alt="Album Image">
                                 <span>{{ msg[5] }} - {{ msg[6] }}</span>
                             </div>
-                            <iframe src="{{ msg[3].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
-                        {% endif %}
+                            {% endif %}
                     </div>
                 {% endfor %}
             {% else %}
@@ -593,10 +592,6 @@ message_template = """
             <p><strong>To:</strong> {{ recipient }}</p>
             <p><strong>Message:</strong> {{ message }}</p>
             {% if spotify_url %}
-                <div class="track-info">
-                    <img src="{{ album_image }}" class="album-image" alt="Album Image">
-                    <span>{{ track_name }} - {{ artist_name }}</span>
-                </div>
                 <iframe src="{{ spotify_url.replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
             {% endif %}
         </div>
