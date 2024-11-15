@@ -205,7 +205,7 @@ index_template = """
             startX = event.touches[0].clientX;
         });
 
-        sliderContainer.addEventListener('touchmove', (event) => ```javascript
+        sliderContainer.addEventListener('touchmove', (event) => {
             const moveX = event.touches[0].clientX;
             const diffX = startX - moveX;
 
@@ -217,6 +217,21 @@ index_template = """
                 startX = moveX; // Reset startX for next move
             }
         });
+
+        function confirmRedirect(action) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You will be redirected to the " + action.replace('_', ' ') + " page.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, go ahead!',
+                cancelButtonText: 'No, cancel!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/' + action;
+                }
+            });
+        }
 
         // Automatic sliding
         setInterval(() => {
@@ -334,7 +349,7 @@ send_song_template = """
                 <label for="to">To:</label>
                 <input type="text" name="to" id="to" placeholder="Recipient's name" required>
 
-                <label for="message">Message:</label ```html
+                <label for="message">Message:</label>
                 <textarea name="message" id="message" placeholder="Write your message..." required></textarea>
 
                 <label for="spotify_url">Song:</label>
@@ -440,8 +455,7 @@ browse_template = """
             border-radius: 4px;
             margin-bottom: 15px;
         }
-        form```html
-        button {
+        form button {
             background-color: #8B4513; /* Vintage button color */
             color: #fff;
             padding: 12px;
@@ -459,8 +473,7 @@ browse_template = """
             margin: 20px 0;
             background: #fff5e1; /* Light vintage color */
             padding: 15px;
-            border-radius: 8px;
-            cursor: pointer;
+            border-radius: 8px cursor: pointer;
             transition: transform 0.3s;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
@@ -568,7 +581,6 @@ message_template = """
             margin-top: 5px;
         }
         .album-image {
-            ```html
             width: 50px;
             height: 50px;
             border-radius: 5px;
@@ -590,7 +602,7 @@ message_template = """
             transition: background-color 0.3s, transform 0.3s;
         }
         button:hover {
-            background-color: #6f3c1e; /* Darker vintage color on hover */
+            background-color: #6f3c1e ; /* Darker vintage color on hover */
             transform: translateY(-2px);
         }
     </style>
@@ -680,4 +692,4 @@ def search_song():
     return jsonify({"error": "No query provided"})
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port= 5000)
+    app.run(debug=True, host="0.0.0.0", port=5000)
