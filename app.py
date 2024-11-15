@@ -236,7 +236,7 @@ index_template = """
         // Automatic sliding
         setInterval(() => {
             slideTo(currentIndex + 1);
-        }, 5000); // Change slide every 5 seconds
+        }, 2000); // Change slide every 2 seconds
     </script>
 </body>
 </html>
