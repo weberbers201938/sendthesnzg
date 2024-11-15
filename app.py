@@ -112,7 +112,7 @@ index_template = """
         }
         .slider-container {
             display: flex;
-            animation: scroll 10s linear infinite;  /* Adjusted duration for scrolling */
+            transition: transform 0.5s ease; /* Smooth transition for manual sliding */
         }
         .card {
             min-width: 300px;
@@ -153,29 +153,6 @@ index_template = """
             align-items: center;
             margin-top: 5px;
         }
-        @keyframes scroll {
-            0% { transform : translateX(0); }
-            100% { transform: translateX(-100%); } /* Scrolls to the left */
-        }
-        .vintage-popup {
-            border: 3px solid #b2967d;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        .vintage-popup .swal2-timer-progress-bar {
-            background-color: #b2967d;
-        }
-        .swal2-title {
-            font-family: 'Georgia', serif;
-            font-size: 24px;
-            color: #3a2f2f;
-            text-shadow: 1px 1px 2px #b2967d;
-        }
-        .swal2-html-container {
-            font-family: 'Courier New', monospace;
-            color: #5a4b3e;
-            line-height: 1.5;
-        }
     </style>
 </head>
 <body>
@@ -185,7 +162,7 @@ index_template = """
         <button onclick="confirmRedirect('browse')">Browse Messages</button>
     </div>
 
-    <div class="slider">
+    <div class="slider" id="slider">
         <div class="slider-container" id="sliderContainer">
             {% for msg in messages %}
                 <div class="card" onclick="window.location.href='/message/{{ msg[0] }}'">
@@ -203,40 +180,48 @@ index_template = """
     </div>
 
     <script>
-        function confirmRedirect(route) {
-            Swal.fire({
-                title: '✨ Redirecting...',
-                html: '<p style="font-family: Georgia, serif; font-size: 18px; color: #3a2f2f;">You will be redirected in <b>3</b> seconds...</p>',
-                timer: 3000,
-                timerProgressBar: true,
-                background: '#f9f2e7',
-                color: '#3a2f2f',
-                showCancelButton: false,
-                showConfirmButton: false,
-                width: '450px',
-                padding: '2rem',
-                customClass: {
-                    popup: 'vintage-popup',
-                },
-                willOpen: () => {
-                    const b = Swal.getHtmlContainer().querySelector('b');
-                    let secondsLeft = 3;
-                    const timerInterval = setInterval(() => {
-                        secondsLeft -= 1;
-                        b.textContent = secondsLeft;
-                    }, 1000);
+        let startX;
+        let currentIndex = 0;
+        const sliderContainer = document.getElementById('sliderContainer');
+        const cards = document.querySelectorAll('.card');
+        const totalCards = cards.length;
 
-                    Swal.showLoading();
-                },
-                onClose: () => {
-                    clearInterval(timerInterval);
-                }
-            }).then((result) => {
-                if (result.dismiss === Swal.DismissReason.timer) {
-                    window.location.href = `/${route}`;
-                }
-            });
+        function updateSliderPosition() {
+            const offset = -currentIndex * (cards[0].offsetWidth + 20); // 20 is the margin
+            sliderContainer.style.transform = `translateX(${offset}px)`;
         }
+
+        function slideTo(index) {
+            currentIndex = index;
+            if (currentIndex < 0) {
+                currentIndex = totalCards - 1;
+            } else if (currentIndex >= totalCards) {
+                currentIndex = 0;
+            }
+            updateSliderPosition();
+        }
+
+        sliderContainer.addEventListener('touchstart', (event) => {
+            startX = event.touches[0].clientX;
+        });
+
+        sliderContainer.addEventListener('touchmove', (event) => ```javascript
+            const moveX = event.touches[0].clientX;
+            const diffX = startX - moveX;
+
+            if (diffX > 50) {
+                slideTo(currentIndex + 1); // Slide right
+                startX = moveX; // Reset startX for next move
+            } else if (diffX < -50) {
+                slideTo(currentIndex - 1); // Slide left
+                startX = moveX; // Reset startX for next move
+            }
+        });
+
+        // Automatic sliding
+        setInterval(() => {
+            slideTo(currentIndex + 1);
+        }, 5000); // Change slide every 5 seconds
     </script>
 </body>
 </html>
@@ -349,7 +334,7 @@ send_song_template = """
                 <label for="to">To:</label>
                 <input type="text" name="to" id="to" placeholder="Recipient's name" required>
 
-                <label for="message">Message:</label>
+                <label for="message">Message:</label ```html
                 <textarea name="message" id="message" placeholder="Write your message..." required></textarea>
 
                 <label for="spotify_url">Song:</label>
@@ -455,7 +440,8 @@ browse_template = """
             border-radius: 4px;
             margin-bottom: 15px;
         }
-        form button {
+        form```html
+        button {
             background-color: #8B4513; /* Vintage button color */
             color: #fff;
             padding: 12px;
@@ -582,6 +568,7 @@ message_template = """
             margin-top: 5px;
         }
         .album-image {
+            ```html
             width: 50px;
             height: 50px;
             border-radius: 5px;
@@ -693,4 +680,4 @@ def search_song():
     return jsonify({"error": "No query provided"})
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=True, host="0.0.0.0", port= 5000)
