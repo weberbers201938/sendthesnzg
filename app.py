@@ -108,12 +108,12 @@ index_template = """
         .card {
             min-width: 300px;
             margin: 10px;
-            background: #fff;
+            background: #ffffff;
             border-radius: 8px;
             padding: 15px;
             text-align: left;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            transition: transform 0 .3s;
+            transition: transform 0.3s;
             position: relative;
             overflow: hidden;
         }
@@ -244,7 +244,7 @@ send_song_template = """
             text-align: center;
             background: #ffffff;
             border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0  4px 20px rgba(0, 0, 0, 0.1);
         }
         h1 {
             margin-bottom: 20px;
@@ -361,10 +361,10 @@ browse_template = """
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale= 1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Browse Messages</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght @400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -490,14 +490,15 @@ message_template = """
             height: 100vh;
             margin: 0;
         }
-.container {
+        .container {
             max-width: 600px;
             width: 100%;
             padding: 20px;
             text-align: center;
             background-color: #ffffff;
             border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0 ```python
+, 0, 0.1);
         }
         h1 {
             margin-bottom: 20px;
