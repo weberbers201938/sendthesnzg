@@ -48,6 +48,199 @@ def is_token_expired():
     return time.time() >= session.get('token_expiry', 0)
 
 # HTML Templates
+index_templates = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send the Song</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f0e5d8; /* Vintage background color */
+            color: #343a40;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            font-family: 'Playfair Display', serif;
+            color: #8B4513; /* Vintage brown color */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: #8B4513; /* Vintage button color */
+            color: #fff;
+            padding: 12px;
+            width: 100%;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s, transform 0.3s;
+            font-size: 1.1em;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background-color: #6f3c1e; /* Darker vintage color on hover */
+            transform: translateY(-2px);
+        }
+        .slider {
+            width: 100%;
+            overflow: hidden;
+            margin-top: 20px;
+            position: relative;
+        }
+        .slider-container {
+            display: flex;
+            animation: scroll 10s linear infinite;  /* Adjusted duration for scrolling */
+        }
+        .card {
+            min-width: 300px;
+            margin: 10px;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: left;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #8B4513; /* Vintage brown border */
+        }
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        .card-title {
+            font-size: 1.2em;
+            color: #333;
+            font-weight: bold;
+        }
+        .card-message {
+            font-size: 0.9em;
+            color: #555;
+            margin: 5px 0;
+        }
+        .album-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .track-info {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+        @keyframes scroll {
+            0% { transform : translateX(0); }
+            100% { transform: translateX(-100%); } /* Scrolls to the left */
+        }
+        .vintage-popup {
+            border: 3px solid #b2967d;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .vintage-popup .swal2-timer-progress-bar {
+            background-color: #b2967d;
+        }
+        .swal2-title {
+            font-family: 'Georgia', serif;
+            font-size: 24px;
+            color: #3a2f2f;
+            text-shadow: 1px 1px 2px #b2967d;
+        }
+        .swal2-html-container {
+            font-family: 'Courier New', monospace;
+            color: #5a4b3e;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Send the Song</h1>
+        <button onclick="confirmRedirect('send_song')">Send the Song</button>
+        <button onclick="confirmRedirect('browse')">Browse Messages</button>
+    </div>
+
+    <div class="slider">
+        <div class="slider-container" id="sliderContainer">
+            {% for msg in messages %}
+                <div class="card" onclick="window.location.href='/message/{{ msg[0] }}'">
+                    <p class="card-title"><strong>To:</strong> {{ msg[1] }}</p>
+                    <p class="card-message">{{ msg[2] }}</p>
+                    {% if msg[4] %}
+                        <div class="track-info">
+                            <img src="{{ msg[4] }}" class="album-image" alt="Album Image">
+                            <span>{{ msg[5] }} - {{ msg[6] }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        function confirmRedirect(route) {
+            Swal.fire({
+                title: '✨ Redirecting...',
+                html: '<p style="font-family: Georgia, serif; font-size: 18px; color: #3a2f2f;">You will be redirected in <b>3</b> seconds...</p>',
+                timer: 3000,
+                timerProgressBar: true,
+                background: '#f9f2e7',
+                color: '#3a2f2f',
+                showCancelButton: false,
+                showConfirmButton: false,
+                width: '450px',
+                padding: '2rem',
+                customClass: {
+                    popup: 'vintage-popup',
+                },
+                willOpen: () => {
+                    const b = Swal.getHtmlContainer().querySelector('b');
+                    let secondsLeft = 3;
+                    const timerInterval = setInterval(() => {
+                        secondsLeft -= 1;
+                        b.textContent = secondsLeft;
+                    }, 1000);
+
+                    Swal.showLoading();
+                },
+                onClose: () => {
+                    clearInterval(timerInterval);
+                }
+            }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    window.location.href = `/${route}`;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+"""
 
 send_song_template = """
 <!DOCTYPE html>
