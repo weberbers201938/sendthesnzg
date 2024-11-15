@@ -244,7 +244,7 @@ send_song_template = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Send The Song</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400; 700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -259,7 +259,7 @@ send_song_template = """
         .container {
             max-width: 600px;
             width: 100%;
-            padding: 20px;
+            padding: 30px;
             text-align: center;
             background: #ffffff;
             border-radius: 10px;
@@ -280,8 +280,9 @@ send_song_template = """
         }
         form label {
             display: block;
-            margin: 10px 0 5px;
+            margin: 15px 0 5px;
             color: #555;
+            font-weight: bold;
         }
         form input, form textarea {
             width: 100%;
@@ -291,6 +292,7 @@ send_song_template = """
             border: 1px solid #ccc;
             border-radius: 4px;
             margin-bottom: 15px;
+            font-size: 1em;
         }
         form button {
             background-color: #1DB954;
@@ -301,6 +303,7 @@ send_song_template = """
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s;
+            font-size: 1.1em;
         }
         form button:hover {
             background-color: #17a648;
@@ -311,14 +314,23 @@ send_song_template = """
             max-height: 150px;
             overflow-y: auto;
             display: none;
+            margin-top: 5px;
         }
         #songSuggestions div {
             padding: 10px;
             cursor: pointer;
             color: #555;
+            display: flex;
+            align-items: center;
         }
         #songSuggestions div:hover {
             background: #ddd;
+        }
+        .album-image {
+            width: 2em;
+            height: 30px;
+            border-radius: 5px;
+            margin-right: 10px;
         }
     </style>
 </head>
@@ -327,7 +339,7 @@ send_song_template = """
         <h1>Send The Song</h1>
         <div class="form-container">
             <form action="{{ url_for('submit') }}" method="POST">
-                <label for="to"> To:</label>
+                <label for="to">To:</label>
                 <input type="text" name="to" id="to" placeholder="Recipient's name" required>
 
                 <label for="message">Message:</label>
@@ -353,8 +365,8 @@ send_song_template = """
             const results = await response.json();
             const suggestions = document.getElementById("songSuggestions");
             suggestions.innerHTML = "";
-            if (results.tracks.items) {
-                results.tracks.items.forEach(track => {
+            if (results.tracks?.items) {
+                results.tracks?.items.forEach(track => {
                     const item = document.createElement("div");
                     item.textContent = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
                     const tracksImage = document.createElement("img");
