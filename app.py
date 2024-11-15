@@ -61,7 +61,7 @@ index_template = """
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: #f0e5d8; /* Vintage background color */
+            background-color: #e9ecef;
             color: #343a40;
             display: flex;
             flex-direction: column;
@@ -84,8 +84,25 @@ index_template = """
             margin-bottom: 20px;
             font-size: 2.5em;
             font-family: 'Playfair Display', serif;
-            color: #8B4513; /* Vintage brown color */
+            color: #1DB954;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: #1DB954;
+            color: #fff;
+            padding: 12px;
+            width: 100%;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+            font-size: 1.1em;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background-color: #17a648;
+            transform: translateY(-2px);
         }
         .slider {
             width: 100%;
@@ -95,20 +112,20 @@ index_template = """
         }
         .slider-container {
             display: flex;
-            animation: scroll 15s linear infinite;  /* Continuous scrolling */
+            animation: scroll 15s linear infinite;  /* Faster scrolling */
         }
         .card {
             min-width: 300px;
             margin: 10px;
-            background: #fff5e1; /* Light vintage color */
+            background: #ffffff;
             border-radius: 8px;
             padding: 15px;
             text-align: left;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 10px rgba (0, 0, 0, 0.2);
             transition: transform 0.3s;
             position: relative;
             overflow: hidden;
-            border: 2px solid #8B4513; /* Brown border */
+            border: 2px solid #1DB954; /* Green border */
         }
         .card:hover {
             transform: scale(1.05);
@@ -136,39 +153,42 @@ index_template = """
             align-items: center;
             margin-top: 5px;
         }
-        .button-container {
-            margin-top: 10px;
-        }
-        .button {
-            background-color: #8B4513; /* Vintage button color */
-            color: #fff;
-            padding: 10px;
-            width: 100%;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 1em;
-            margin-top: 5px;
-        }
-        .button:hover {
-            background-color: #6f3c1e; /* Darker vintage color on hover */
-        }
         @keyframes scroll {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
+        }
+        .vintage-popup {
+            border: 3px solid #b2967d;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .vintage-popup .swal2-timer-progress-bar {
+            background-color: #b2967d;
+        }
+        .swal2-title {
+            font-family: 'Georgia', serif;
+            font-size: 24px;
+            color: #3a2f2f;
+            text-shadow: 1px 1px 2px #b2967d;
+        }
+        .swal2-html-container {
+            font-family: 'Courier New', monospace;
+            color: #5a4b3e;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Send the Song</h1>
+        <button onclick="confirmRedirect('send_song')">Send the Song</button>
+        <button onclick="confirmRedirect('browse')">Browse Messages</button>
     </div>
 
     <div class="slider">
         <div class="slider-container" id="sliderContainer">
             {% for msg in messages %}
-                <div class="card">
+                <div class="card" onclick="window.location.href='/message/{{ msg[0] }}'">
                     <p class="card-title"><strong>To:</strong> {{ msg[1] }}</p>
                     <p class="card-message">{{ msg[2] }}</p>
                     {% if msg[4] %}
@@ -177,10 +197,6 @@ index_template = """
                             <span>{{ msg[5] }} - {{ msg[6] }}</span>
                         </div>
                     {% endif %}
-                    <div class="button-container">
-                        <button class="button" onclick="window.location.href='/message/{{ msg[0] }}'">View Message</button>
-                        <button class="button" onclick="confirmRedirect('send_song')">Send a Song</button>
-                    </div>
                 </div>
             {% endfor %}
         </div>
