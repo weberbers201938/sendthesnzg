@@ -61,7 +61,7 @@ index_template = """
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: #e9ecef;
+            background-color: #f0e5d8; /* Vintage background color */
             color: #343a40;
             display: flex;
             flex-direction: column;
@@ -84,25 +84,8 @@ index_template = """
             margin-bottom: 20px;
             font-size: 2.5em;
             font-family: 'Playfair Display', serif;
-            color: #1DB954;
+            color: #8B4513; /* Vintage brown color */
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        button {
-            background-color: #1DB954;
-            color: #fff;
-            padding: 12px;
-            width: 100%;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background-color 0.3s;
-            font-size: 1.1em;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        button:hover {
-            background-color: #17a648;
-            transform: translateY(-2px);
         }
         .slider {
             width: 100%;
@@ -112,20 +95,20 @@ index_template = """
         }
         .slider-container {
             display: flex;
-            animation: scroll 15s linear infinite;  /* Faster scrolling */
+            animation: scroll 15s linear infinite;  /* Continuous scrolling */
         }
         .card {
             min-width: 300px;
             margin: 10px;
-            background: #ffffff;
+            background: #fff5e1; /* Light vintage color */
             border-radius: 8px;
             padding: 15px;
             text-align: left;
-            box-shadow: 0 4px 10px rgba (0, 0, 0, 0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s;
             position: relative;
             overflow: hidden;
-            border: 2px solid #1DB954; /* Green border */
+            border: 2px solid #8B4513; /* Brown border */
         }
         .card:hover {
             transform: scale(1.05);
@@ -153,42 +136,39 @@ index_template = """
             align-items: center;
             margin-top: 5px;
         }
+        .button-container {
+            margin-top: 10px;
+        }
+        .button {
+            background-color: #8B4513; /* Vintage button color */
+            color: #fff;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 1em;
+            margin-top: 5px;
+        }
+        .button:hover {
+            background-color: #6f3c1e; /* Darker vintage color on hover */
+        }
         @keyframes scroll {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
-        }
-        .vintage-popup {
-            border: 3px solid #b2967d;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        .vintage-popup .swal2-timer-progress-bar {
-            background-color: #b2967d;
-        }
-        .swal2-title {
-            font-family: 'Georgia', serif;
-            font-size: 24px;
-            color: #3a2f2f;
-            text-shadow: 1px 1px 2px #b2967d;
-        }
-        .swal2-html-container {
-            font-family: 'Courier New', monospace;
-            color: #5a4b3e;
-            line-height: 1.5;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Send the Song</h1>
-        <button onclick="confirmRedirect('send_song')">Send the Song</button>
-        <button onclick="confirmRedirect('browse')">Browse Messages</button>
     </div>
 
     <div class="slider">
         <div class="slider-container" id="sliderContainer">
             {% for msg in messages %}
-                <div class="card" onclick="window.location.href='/message/{{ msg[0] }}'">
+                <div class="card">
                     <p class="card-title"><strong>To:</strong> {{ msg[1] }}</p>
                     <p class="card-message">{{ msg[2] }}</p>
                     {% if msg[4] %}
@@ -197,6 +177,10 @@ index_template = """
                             <span>{{ msg[5] }} - {{ msg[6] }}</span>
                         </div>
                     {% endif %}
+                    <div class="button-container">
+                        <button class="button" onclick="window.location.href='/message/{{ msg[0] }}'">View Message</button>
+                        <button class="button" onclick="confirmRedirect('send_song')">Send a Song</button>
+                    </div>
                 </div>
             {% endfor %}
         </div>
@@ -248,13 +232,13 @@ send_song_template = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Send The Song </title>
+    <title>Send The Song</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: #f8f9fa;
+            background-color: #f0e5d8; /* Vintage background color */
             color: #343a40;
             display: flex;
             justify-content: center;
@@ -275,7 +259,7 @@ send_song_template = """
             margin-bottom: 20px;
             font-size: 2.5em;
             font-family: 'Playfair Display', serif;
-            color: #1DB954;
+            color: #8B4513; /* Vintage brown color */
         }
         .form-container {
             background: #fff;
@@ -301,7 +285,7 @@ send_song_template = """
             font-size: 1em;
         }
         form button {
-            background-color: #1DB954;
+            background-color: #8B4513; /* Vintage button color */
             color: #fff;
             padding: 12px;
             width: 100%;
@@ -312,7 +296,7 @@ send_song_template = """
             font-size: 1.1em;
         }
         form button:hover {
-            background-color: #17a648;
+            background-color: #6f3c1e; /* Darker vintage color on hover */
         }
         #songSuggestions {
             background: #f0f0f0;
@@ -374,7 +358,7 @@ send_song_template = """
             const results = await response.json();
             const suggestions = document.getElementById("songSuggestions");
             suggestions.innerHTML = "";
- if (results.tracks?.items) {
+            if (results.tracks?.items) {
                 results.tracks.items.forEach(track => {
                     const item = document.createElement("div");
                     item.textContent = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
@@ -417,7 +401,7 @@ browse_template = """
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: #e9ecef;
+            background-color: #f0e5d8; /* Vintage background color */
             color: #343a40;
             display: flex;
             justify-content: center;
@@ -438,7 +422,7 @@ browse_template = """
             margin-bottom: 20px;
             font-size: 2.5em;
             font-family: 'Playfair Display', serif;
-            color: #1DB954;
+            color: #8B4513; /* Vintage brown color */
         }
         form label {
             display: block;
@@ -455,7 +439,7 @@ browse_template = """
             margin-bottom: 15px;
         }
         form button {
-            background-color: #1DB954;
+            background-color: #8B4513; /* Vintage button color */
             color: #fff;
             padding: 12px;
             width: 100%;
@@ -465,11 +449,11 @@ browse_template = """
             transition: background-color 0.3s;
         }
         form button:hover {
-            background-color: #17a648;
+            background-color: #6f3c1e; /* Darker vintage color on hover */
         }
         .message {
             margin: 20px 0;
-            background: #fff;
+            background: #fff5e1; /* Light vintage color */
             padding: 15px;
             border-radius: 8px;
             cursor: pointer;
@@ -498,7 +482,7 @@ browse_template = """
 </head>
 <body>
     <div class="container">
-        <h1>Browse Messages</h1>
+        <h1>Browse Messages</h1
         <form action="{{ url_for('browse') }}" method="GET">
             <label for="recipient">Recipient's Name:</label>
             <input type="text" name="recipient" required>
@@ -540,7 +524,7 @@ message_template = """
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: #e9ecef;
+            background-color: #f0e5d8; /* Vintage background color */
             color: #343a40;
             display: flex;
             justify-content: center;
@@ -561,10 +545,10 @@ message_template = """
             margin-bottom: 20px;
             font-size: 2.5em;
             font-family: 'Playfair Display', serif;
-            color: #1DB954;
+            color: #8B4513; /* Vintage brown color */
         }
         .message {
-            background: #fff;
+            background: #fff5e1; /* Light vintage color */
             padding: 20px;
             border-radius: 8px;
             margin: 20px 0;
@@ -591,7 +575,7 @@ message_template = """
             border-radius: 8px;
         }
         button {
-            background-color: #1DB954;
+            background-color: #8B4513; /* Vintage button color */
             color: #fff;
             padding: 12px;
             width: 100%;
@@ -601,7 +585,7 @@ message_template = """
             transition: background-color 0.3s;
         }
         button:hover {
-            background-color: #17a648;
+            background-color: #6f3c1e; /* Darker vintage color on hover */
         }
     </style>
 </head>
