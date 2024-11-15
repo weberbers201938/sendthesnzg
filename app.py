@@ -61,7 +61,7 @@ index_template = """
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: #e9ecef;
+            background-color: #f8f9fa;
             color: #343a40;
             display: flex;
             flex-direction: column;
@@ -93,10 +93,10 @@ index_template = """
             padding: 12px;
             width: 100%;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
             margin-top: 10px;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.3s;
             font-size: 1.1em;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
@@ -306,13 +306,14 @@ send_song_template = """
             padding: 12px;
             width: 100%;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.3s;
             font-size: 1.1em;
         }
         form button:hover {
             background-color: #6f3c1e; /* Darker vintage color on hover */
+            transform: translateY(-2px);
         }
         #songSuggestions {
             background: #f0f0f0;
@@ -368,7 +369,7 @@ send_song_template = """
         async function searchSpotifySongs(query) {
             if (query.length < 3) {
                 document.getElementById("songSuggestions").style.display = "none";
- return;
+                return;
             }
             const response = await fetch('/search_song?query=' + encodeURIComponent(query));
             const results = await response.json();
@@ -460,12 +461,13 @@ browse_template = """
             padding: 12px;
             width: 100%;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.3s;
         }
         form button:hover {
             background-color: #6f3c1e; /* Darker vintage color on hover */
+            transform: translateY(-2px);
         }
         .message {
             margin: 20px 0;
@@ -480,7 +482,7 @@ browse_template = """
             transform: scale(1.02);
         }
         .message p {
-            margin:  5px 0;
+            margin: 5px 0;
             color: #555;
         }
         .message .track-info {
@@ -596,12 +598,13 @@ message_template = """
             padding: 12px;
             width: 100%;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.3s;
         }
         button:hover {
             background-color: #6f3c1e; /* Darker vintage color on hover */
+            transform: translateY(-2px);
         }
     </style>
 </head>
