@@ -20,7 +20,10 @@ def init_db():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 recipient TEXT,
                 message TEXT,
-                spotify_url TEXT
+                spotify_url TEXT,
+                album_image TEXT,
+                track_name TEXT,
+                artist_name TEXT
             )
         """)
     conn.close()
@@ -119,8 +122,8 @@ index_template = """
             border: 2px solid #1DB954; /* Green border */
         }
         .card:hover {
-            transform: scale(1.05 );
-            box-shadow: 0 8px 20px rgba(0 , 0, 0, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
         .card-title {
             font-size: 1.2em;
@@ -131,6 +134,18 @@ index_template = """
             font-size: 0.9em;
             color: #555;
             margin: 5px 0;
+        }
+        .album-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .track-info {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
         }
         @keyframes scroll {
             0% { transform: translateX(0); }
@@ -171,7 +186,10 @@ index_template = """
                     <p class="card-title"><strong>To:</strong> {{ msg[1] }}</p>
                     <p class="card-message">{{ msg[2] }}</p>
                     {% if msg[3] %}
-                        <iframe src="{{ msg[3].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media" style="width: 100%; height: 80px; border-radius: 8px;"></iframe>
+                        <div class="track-info">
+                            <img src="{{ msg[3] }}" class="album-image" alt="Album Image">
+                            <span>{{ msg[4] }} - {{ msg[5] }}</span>
+                        </div>
                     {% endif %}
                 </div>
             {% endfor %}
@@ -226,7 +244,7 @@ send_song_template = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Send The Song</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family= Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -236,7 +254,8 @@ send_song_template = """
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0 }
+            margin: 0;
+        }
         .container {
             max-width: 600px;
             width: 100%;
@@ -318,6 +337,9 @@ send_song_template = """
                 <input type="text" id="song_search" placeholder="Search for a song" oninput="searchSpotifySongs(this.value)">
                 <div id="songSuggestions"></div>
                 <input type="hidden" name="spotify_url" id="spotify_url">
+                <input type="hidden" name="album_image" id="album_image">
+                <input type="hidden" name="track_name" id="track_name">
+                <input type="hidden" name="artist_name" id="artist_name">
 
                 <button type="submit">Submit Message</button>
             </form>
@@ -337,12 +359,13 @@ send_song_template = """
                     item.textContent = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
                     const tracksImage = document.createElement("img");
                     tracksImage.src = track.album.images[0].url;  // Get the album image
-                    tracksImage.style.width = "2em"; // Set a width for the image
-                    tracksImage.style.marginRight = "10px"; // Add some margin
-                    tracksImage.style.verticalAlign = "middle";
+                    tracksImage.className = "album-image"; // Set class for styling
                     item.prepend(tracksImage);
                     item.onclick = () => {
                         document.getElementById("spotify_url").value = track.external_urls.spotify;
+                        document.getElementById("album_image").value = track.album .images[0].url; // Save album image URL
+                        document.getElementById("track_name").value = track.name; // Save track name
+                        document.getElementById("artist_name").value = track.artists.map(artist => artist.name).join(", "); // Save artist names
                         document.getElementById("song_search").value = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
                         suggestions.style.display = "none";
                     };
@@ -434,6 +457,17 @@ browse_template = """
             margin: 5px 0;
             color: #555;
         }
+        .message .track-info {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+        .album-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
         .message iframe {
             width: 100%;
             height: 120px; /* Increased height for better visibility */
@@ -457,6 +491,10 @@ browse_template = """
                         <p><strong>To:</strong> {{ msg[1] }}</p>
                         <p>{{ msg[2] }}</p>
                         {% if msg[3] %}
+                            <div class="track-info">
+                                <img src="{{ msg[4 }}" class="album-image" alt="Album Image">
+                                <span>{{ msg[5] }} - {{ msg[6] }}</span>
+                            </div>
                             <iframe src="{{ msg[3].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
                         {% endif %}
                     </div>
@@ -516,6 +554,17 @@ message_template = """
             margin: 5px 0;
             color: #555;
         }
+        .message .track-info {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+        .album-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
         .message iframe {
             width: 100%;
             height: 120px; /* Increased height for better visibility */
@@ -543,6 +592,10 @@ message_template = """
             <p><strong>To:</strong> {{ recipient }}</p>
             <p><strong>Message:</strong> {{ message }}</p>
             {% if spotify_url %}
+                <div class="track-info">
+                    <img src="{{ album_image }}" class="album-image" alt="Album Image">
+                    <span>{{ track_name }} - {{ artist_name }}</span>
+                </div>
                 <iframe src="{{ spotify_url.replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
             {% endif %}
         </div>
@@ -556,10 +609,10 @@ message_template = """
 def message_details(message_id):
     with sqlite3.connect("messages.db") as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT recipient, message, spotify_url FROM messages WHERE id = ?", (message_id,))
+        cursor.execute("SELECT recipient, message, spotify_url, album_image, track_name, artist_name FROM messages WHERE id = ?", (message_id,))
         message = cursor.fetchone()
     if message:
-        return render_template_string(message_template, recipient=message[0], message=message[1], spotify_url=message[2])
+        return render_template_string(message_template, recipient=message[0], message=message[1], spotify_url=message[2], album_image=message[3], track_name=message[4], artist_name=message[5])
     return "Message not found", 404
 
 @app.route('/')
@@ -567,7 +620,7 @@ def index():
     messages = []  # Load messages from the database to display in the slider
     with sqlite3.connect("messages.db") as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT id, recipient, message, spotify_url FROM messages")
+        cursor.execute("SELECT id, recipient, message, spotify_url, album_image, track_name, artist_name FROM messages")
         messages = cursor.fetchall()
     random.shuffle(messages)  # Shuffle messages for random display
     return render_template_string(index_template, messages=messages)
@@ -583,11 +636,14 @@ def submit():
     recipient = request.form.get("to")
     message = request.form.get("message")
     spotify_url = request.form.get("spotify_url")
+    album_image = request.form.get("album_image")
+    track_name = request.form.get("track_name")
+    artist_name = request.form.get("artist_name")
 
     with sqlite3.connect("messages.db") as conn:
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO messages (recipient, message, spotify_url) VALUES (?, ?, ?)",
-                       (recipient, message, spotify_url))
+        cursor.execute("INSERT INTO messages (recipient, message, spotify_url, album_image, track_name, artist_name) VALUES (?, ?, ?, ?, ?, ?)",
+                       (recipient, message, spotify_url, album_image, track_name, artist_name))
         message_id = cursor.lastrowid  # Get the ID of the newly inserted message
     return redirect(url_for('message_details', message_id=message_id))  # Redirect to the message details page
 
@@ -598,7 +654,7 @@ def browse():
     with sqlite3.connect("messages.db") as conn:
         cursor = conn.cursor()
         if recipient:
-            cursor.execute("SELECT id, recipient, message, spotify_url FROM messages WHERE recipient LIKE ?", ('%' + recipient + '%',))
+            cursor.execute("SELECT id, recipient, message, spotify_url, album_image, track_name, artist_name FROM messages WHERE recipient LIKE ?", ('%' + recipient + '%',))
             messages = cursor.fetchall()
     return render_template_string(browse_template, messages=messages)
 
