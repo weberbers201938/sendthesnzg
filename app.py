@@ -359,6 +359,9 @@ send_song_template = """
                     item.textContent = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
                     const tracksImage = document.createElement("img");
                     tracksImage.src = track.album.images[0].url;  // Get the album image
+                    tracksImage.style.width = "2em"; // Set a width for the image
+                    tracksImage.style.marginRight = "10px"; // Add some margin
+                    tracksImage.style.verticalAlign = "middle";
                     tracksImage.className = "album-image"; // Set class for styling
                     item.prepend(tracksImage);
                     item.onclick = () => {
