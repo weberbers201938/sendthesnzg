@@ -112,8 +112,7 @@ index_template = """
             min-width: 300px;
             margin: 10px;
             background: #ffffff;
-            border-radius: 8px;
-            padding: 15px;
+            border-radius: 8px padding: 15px;
             text-align: left;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s;
@@ -369,7 +368,7 @@ send_song_template = """
             const suggestions = document.getElementById("songSuggestions");
             suggestions.innerHTML = "";
             if (results.tracks?.items) {
-                results.tr acks.items.forEach(track => {
+                results.tracks.items.forEach(track => {
                     const item = document.createElement("div");
                     item.textContent = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
                     const tracksImage = document.createElement("img");
