@@ -55,7 +55,7 @@ index_template = """
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: #f8f9fa;
+            background-color: #e9ecef;
             color: #343a40;
             display: flex;
             flex-direction: column;
@@ -106,7 +106,7 @@ index_template = """
         }
         .slider-container {
             display: flex;
-            animation: scroll 30s linear infinite;
+            animation: scroll 15s linear infinite;  /* Faster scrolling */
         }
         .card {
             min-width: 300px;
@@ -244,8 +244,7 @@ send_song_template = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Send The Song</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair ```python
-+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400; 700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -364,7 +363,7 @@ send_song_template = """
                     item.prepend(tracksImage);
                     item.onclick = () => {
                         document.getElementById("spotify_url").value = track.external_urls.spotify;
-                        document.getElementById("album_image").value = track .album.images[0].url; // Save album image URL
+                        document.getElementById("album_image").value = track.album.images[0].url; // Save album image URL
                         document.getElementById("track_name").value = track.name; // Save track name
                         document.getElementById("artist_name").value = track.artists.map(artist => artist.name).join(", "); // Save artist names
                         document.getElementById("song_search").value = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
@@ -392,7 +391,7 @@ browse_template = """
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: #f8f9fa;
+            background-color: #e9ecef;
             color: #343a40;
             display: flex;
             justify-content: center;
@@ -471,7 +470,7 @@ browse_template = """
         }
         .message iframe {
             width: 100%;
-            height: 120px; /* Increased height for better visibility */
+            height: 200px; /* Increased height for better visibility */
             border-radius: 8px;
         }
     </style>
@@ -496,7 +495,7 @@ browse_template = """
                                 <img src="{{ msg[4] }}" class="album-image" alt="Album Image">
                                 <span>{{ msg[5] }} - {{ msg[6] }}</span>
                             </div>
-                            {% endif %}
+                        {% endif %}
                     </div>
                 {% endfor %}
             {% else %}
@@ -520,7 +519,7 @@ message_template = """
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: #f8f9fa;
+            background-color: #e9ecef;
             color: #343a40;
             display: flex;
             justify-content: center;
@@ -567,7 +566,7 @@ message_template = """
         }
         .message iframe {
             width: 100%;
-            height: 120px; /* Increased height for better visibility */
+            height: 300px; /* Increased height for better visibility */
             border-radius: 8px;
         }
         button {
