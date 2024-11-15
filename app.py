@@ -185,10 +185,10 @@ index_template = """
                 <div class="card" onclick="window.location.href='/message/{{ msg[0] }}'">
                     <p class="card-title"><strong>To:</strong> {{ msg[1] }}</p>
                     <p class="card-message">{{ msg[2] }}</p>
-                    {% if msg[3] %}
+                    {% if msg[4] %}
                         <div class="track-info">
-                            <img src="{{ msg[3] }}" class="album-image" alt="Album Image">
-                            <span>{{ msg[4] }} - {{ msg[5] }}</span>
+                            <img src="{{ msg[4] }}" class="album-image" alt="Album Image">
+                            <span>{{ msg[5] }} - {{ msg[6] }}</span>
                         </div>
                     {% endif %}
                 </div>
@@ -244,7 +244,8 @@ send_song_template = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Send The Song</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family= Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair ```python
++Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -363,7 +364,7 @@ send_song_template = """
                     item.prepend(tracksImage);
                     item.onclick = () => {
                         document.getElementById("spotify_url").value = track.external_urls.spotify;
-                        document.getElementById("album_image").value = track.album .images[0].url; // Save album image URL
+                        document.getElementById("album_image").value = track .album.images[0].url; // Save album image URL
                         document.getElementById("track_name").value = track.name; // Save track name
                         document.getElementById("artist_name").value = track.artists.map(artist => artist.name).join(", "); // Save artist names
                         document.getElementById("song_search").value = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
@@ -490,9 +491,9 @@ browse_template = """
                     <div class="message" onclick="window.location.href='/message/{{ msg[0] }}'">
                         <p><strong>To:</strong> {{ msg[1] }}</p>
                         <p>{{ msg[2] }}</p>
-                        {% if msg[3] %}
+                        {% if msg[4] %}
                             <div class="track-info">
-                                <img src="{{ msg[4 }}" class="album-image" alt="Album Image">
+                                <img src="{{ msg[4] }}" class="album-image" alt="Album Image">
                                 <span>{{ msg[5] }} - {{ msg[6] }}</span>
                             </div>
                             <iframe src="{{ msg[3].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
@@ -617,7 +618,8 @@ def message_details(message_id):
 
 @app.route('/')
 def index():
-    messages = []  # Load messages from the database to display in the slider
+    messages = []
+    # Load messages from the database to display in the slider
     with sqlite3.connect("messages.db") as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT id, recipient, message, spotify_url, album_image, track_name, artist_name FROM messages")
