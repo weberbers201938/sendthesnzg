@@ -3,6 +3,7 @@ import os
 import requests
 import sqlite3
 import random
+import time
 
 app = Flask(__name__)
 app.secret_key = "skibiditoilet"  # Change this to your desired secret key
@@ -40,6 +41,11 @@ def get_spotify_token():
     })
     response_data = response.json()
     session['spotify_token'] = response_data.get("access_token")
+    session['token_expiry'] = time.time() + response_data.get("expires_in", 3600)  # Set expiry time
+
+def is_token_expired():
+    """Check if the Spotify token has expired."""
+    return time.time() >= session.get('token_expiry', 0)
 
 # HTML Templates
 index_template = """
@@ -112,9 +118,10 @@ index_template = """
             min-width: 300px;
             margin: 10px;
             background: #ffffff;
-            border-radius: 8px padding: 15px;
+            border-radius: 8px;
+            padding: 15px;
             text-align: left;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 10px rgba (0, 0, 0, 0.2);
             transition: transform 0.3s;
             position: relative;
             overflow: hidden;
@@ -241,7 +248,7 @@ send_song_template = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Send The Song</title>
+    <title>Send The Song </title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -367,7 +374,7 @@ send_song_template = """
             const results = await response.json();
             const suggestions = document.getElementById("songSuggestions");
             suggestions.innerHTML = "";
-            if (results.tracks?.items) {
+ if (results.tracks?.items) {
                 results.tracks.items.forEach(track => {
                     const item = document.createElement("div");
                     item.textContent = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
@@ -486,11 +493,6 @@ browse_template = """
             height: 50px;
             border-radius: 5px;
             margin-right: 10px;
-        }
-        .message iframe {
-            width: 100%;
-            height: 200px; /* Increased height for better visibility */
-            border-radius: 8px;
         }
     </style>
 </head>
@@ -642,7 +644,7 @@ def index():
 
 @app.route('/send_song')
 def send_song():
-    if 'spotify_token' not in session:
+    if is_token_expired():
         get_spotify_token()
     return render_template_string(send_song_template)
 
@@ -677,7 +679,7 @@ def browse():
 def search_song():
     query = request.args.get('query')
     if query:
-        if 'spotify_token' not in session:
+        if is_token_expired():
             get_spotify_token()
 
         headers = {
