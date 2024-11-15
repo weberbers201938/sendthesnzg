@@ -2,6 +2,7 @@ from flask import Flask, render_template_string, request, redirect, url_for, jso
 import os
 import requests
 import sqlite3
+import random
 
 app = Flask(__name__)
 app.secret_key = "skibiditoilet"  # Change this to your desired secret key
@@ -98,6 +99,7 @@ index_template = """
             width: 100%;
             overflow: hidden;
             margin-top: 20px;
+            position: relative;
         }
         .slider-container {
             display: flex;
@@ -110,18 +112,22 @@ index_template = """
             border-radius: 8px;
             padding: 15px;
             text-align: left;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0 .3s;
+            position: relative;
+            overflow: hidden;
         }
         .card:hover {
             transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
         .card-title {
             font-size: 1.2em;
             color: #333;
+            font-weight: bold;
         }
         .card-message {
-            font-size: 0.9 em;
+            font-size: 0.9em;
             color: #555;
             margin: 5px 0;
         }
@@ -130,27 +136,24 @@ index_template = """
             100% { transform: translateX(-50%); }
         }
         .vintage-popup {
-    border: 3px solid #b2967d;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.vintage-popup .swal2-timer-progress-bar {
-    background-color: #b2967d;
-}
-
-.swal2-title {
-    font-family: 'Georgia', serif;
-    font-size: 24px;
-    color: #3a2f2f;
-    text-shadow: 1px 1px 2px #b2967d;
-}
-
-.swal2-html-container {
-    font-family: 'Courier New', monospace;
-    color: #5a4b3e;
-    line-height: 1.5;
-}
+            border: 3px solid #b2967d;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .vintage-popup .swal2-timer-progress-bar {
+            background-color: #b2967d;
+        }
+        .swal2-title {
+            font-family: 'Georgia', serif;
+            font-size: 24px;
+            color: #3a2f2f;
+            text-shadow: 1px 1px 2px #b2967d;
+        }
+        .swal2-html-container {
+            font-family: 'Courier New', monospace;
+            color: #5a4b3e;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
@@ -171,53 +174,44 @@ index_template = """
                     {% endif %}
                 </div>
             {% endfor %}
-            {% for msg in messages %}
-                <div class="card" onclick="window.location.href='/message/{{ msg[0] }}'">
-                    <p class="card-title"><strong>To:</strong> {{ msg[1] }}</p>
-                    <p class="card-message">{{ msg[2] }}</p>
-                    {% if msg[3] %}
-                        <iframe src="{{ msg[3].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
-                    {% endif %}
-                </div>
-            {% endfor %}
         </div>
     </div>
 
     <script>
         function confirmRedirect(route) {
-    Swal.fire({
-        title: '✨ Redirecting...',
-        html: '<p style="font-family: Georgia, serif; font-size: 18px; color: #3a2f2f;">You will be redirected in <b>3</b> seconds...</p>',
-        timer: 3000,
-        timerProgressBar: true,
-        background: '#f9f2e7',
-        color: '#3a2f2f',
-        showCancelButton: false,
-        showConfirmButton: false,
-        width: '450px',
-        padding: '2rem',
-        customClass: {
-            popup: 'vintage-popup',
-        },
-        willOpen: () => {
-            const b = Swal.getHtmlContainer().querySelector('b');
-            let secondsLeft = 3;
-            const timerInterval = setInterval(() => {
-                secondsLeft -= 1;
-                b.textContent = secondsLeft;
-            }, 1000);
+            Swal.fire({
+                title: '✨ Redirecting...',
+                html: '<p style="font-family: Georgia, serif; font-size: 18px; color: #3a2f2f;">You will be redirected in <b>3</b> seconds...</p>',
+                timer: 3000,
+                timerProgressBar: true,
+                background: '#f9f2e7',
+                color: '#3a2f2f',
+                showCancelButton: false,
+                showConfirmButton: false,
+                width: '450px',
+                padding: '2rem',
+                customClass: {
+                    popup: 'vintage-popup',
+                },
+                willOpen: () => {
+                    const b = Swal.getHtmlContainer().querySelector('b');
+                    let secondsLeft = 3;
+                    const timerInterval = setInterval(() => {
+                        secondsLeft -= 1;
+                        b.textContent = secondsLeft;
+                    }, 1000);
 
-            Swal.showLoading();
-        },
-        onClose: () => {
-            clearInterval(timerInterval);
+                    Swal.showLoading();
+                },
+                onClose: () => {
+                    clearInterval(timerInterval);
+                }
+            }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    window.location.href = `/${route}`;
+                }
+            });
         }
-    }).then((result) => {
-        if (result.dismiss === Swal.DismissReason.timer) {
-            window.location.href = `/${route}`;
-        }
-    });
-}
     </script>
 </body>
 </html>
@@ -281,7 +275,7 @@ send_song_template = """
         }
         form button {
             background-color: #1DB954;
- color: #fff;
+            color: #fff;
             padding: 12px;
             width: 100%;
             border: none;
@@ -367,7 +361,7 @@ browse_template = """
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale= 1.0">
     <title>Browse Messages</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
@@ -405,7 +399,7 @@ browse_template = """
         form input {
             width: 100%;
             padding: 12px;
- background: #f0f0f0;
+            background: #f0f0f0;
             color: #333;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -496,7 +490,7 @@ message_template = """
             height: 100vh;
             margin: 0;
         }
-        .container {
+.container {
             max-width: 600px;
             width: 100%;
             padding: 20px;
@@ -540,7 +534,7 @@ message_template = """
         button:hover {
             background-color: #17a648;
         }
-</style>
+    </style>
 </head>
 <body>
     <div class="container">
@@ -575,6 +569,7 @@ def index():
         cursor = conn.cursor()
         cursor.execute("SELECT id, recipient, message, spotify_url FROM messages")
         messages = cursor.fetchall()
+    random.shuffle(messages)  # Shuffle messages for random display
     return render_template_string(index_template, messages=messages)
 
 @app.route('/send_song')
