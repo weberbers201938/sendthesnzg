@@ -61,7 +61,7 @@ index_template = """
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: #f0e5d8; /* Vintage background color */
+            background-color: #e9ecef;
             color: #343a40;
             display: flex;
             flex-direction: column;
@@ -84,8 +84,25 @@ index_template = """
             margin-bottom: 20px;
             font-size: 2.5em;
             font-family: 'Playfair Display', serif;
-            color: #8B4513; /* Vintage brown color */
+            color: #1DB954;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: #1DB954;
+            color: #fff;
+            padding: 12px;
+            width: 100%;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+            font-size: 1.1em;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background-color: #17a648;
+            transform: translateY(-2px);
         }
         .slider {
             width: 100%;
@@ -95,12 +112,12 @@ index_template = """
         }
         .slider-container {
             display: flex;
-            animation: scroll 15s linear infinite;  /* Continuous scrolling */
+            animation: scroll 15s linear infinite;  /* Faster scrolling */
         }
         .card {
             min-width: 300px;
             margin: 10px;
-            background: #fff5e1; /* Light vintage color */
+            background: #ffffff;
             border-radius: 8px;
             padding: 15px;
             text-align: left;
@@ -108,11 +125,11 @@ index_template = """
             transition: transform 0.3s;
             position: relative;
             overflow: hidden;
-            border: 2px solid #8B4513; /* Brown border */
+            border: 2px solid #1DB954; /* Green border */
         }
         .card:hover {
             transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0. 3);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
         .card-title {
             font-size: 1.2em;
@@ -136,39 +153,42 @@ index_template = """
             align-items: center;
             margin-top: 5px;
         }
-        .button-container {
-            margin-top: 10px;
-        }
-        .button {
-            background-color: #8B4513; /* Vintage button color */
-            color: #fff;
-            padding: 10px;
-            width: 100%;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 1em;
-            margin-top: 5px;
-        }
-        .button:hover {
-            background-color: #6f3c1e; /* Darker vintage color on hover */
-        }
         @keyframes scroll {
             0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
+            100% { transform: translateX(-100%); } /* Adjusted to scroll through all cards */
+        }
+        .vintage-popup {
+            border: 3px solid #b2967d;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .vintage-popup .swal2-timer-progress-bar {
+            background-color: #b2967d;
+        }
+        .swal2-title {
+            font-family: 'Georgia', serif;
+            font-size: 24px;
+            color: #3a2f2f;
+            text-shadow: 1px 1px 2px #b2967d;
+        }
+        .swal2-html-container {
+            font-family: 'Courier New', monospace;
+            color: #5a4b3e;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Send the Song</h1>
+        <button onclick="confirmRedirect('send_song')">Send the Song</button>
+        <button onclick="confirmRedirect('browse')">Browse Messages</button>
     </div>
 
     <div class="slider">
         <div class="slider-container" id="sliderContainer">
             {% for msg in messages %}
-                <div class="card">
+                <div class="card" onclick="window.location.href='/message/{{ msg[0] }}'">
                     <p class="card-title"><strong>To:</strong> {{ msg[1] }}</p>
                     <p class="card-message">{{ msg[2] }}</p>
                     {% if msg[4] %}
@@ -177,10 +197,6 @@ index_template = """
                             <span>{{ msg[5] }} - {{ msg[6] }}</span>
                         </div>
                     {% endif %}
-                    <div class="button-container">
-                        <button class="button" onclick="window.location.href='/message/{{ msg[0] }}'">View Message</button>
-                        <button class="button" onclick="confirmRedirect('send_song')">Send a Song</button>
-                    </div>
                 </div>
             {% endfor %}
         </div>
@@ -243,7 +259,8 @@ send_song_template = """
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh margin: 0;
+            height: 100vh;
+            margin: 0;
         }
         .container {
             max-width: 600px;
@@ -351,7 +368,7 @@ send_song_template = """
         async function searchSpotifySongs(query) {
             if (query.length < 3) {
                 document.getElementById("songSuggestions").style.display = "none";
-                return;
+ return;
             }
             const response = await fetch('/search_song?query=' + encodeURIComponent(query));
             const results = await response.json();
@@ -363,7 +380,8 @@ send_song_template = """
                     item.textContent = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
                     const tracksImage = document.createElement("img");
                     tracksImage.src = track.album.images[0].url;  // Get the album image
-                    tracksImage.style.width = "30px"; // Set a width for the image tracksImage.style.marginRight = "10px"; // Add some margin
+                    tracksImage.style.width = "30px"; // Set a width for the image
+                    tracksImage.style.marginRight = "10px"; // Add some margin
                     tracksImage.style.verticalAlign = "middle";
                     tracksImage.className = "album-image"; // Set class for styling
                     item.prepend(tracksImage);
@@ -462,7 +480,7 @@ browse_template = """
             transform: scale(1.02);
         }
         .message p {
-            margin: 5px 0;
+            margin:  5px 0;
             color: #555;
         }
         .message .track-info {
@@ -484,7 +502,7 @@ browse_template = """
         <form action="{{ url_for('browse') }}" method="GET">
             <label for="recipient">Recipient's Name:</label>
             <input type="text" name="recipient" required>
-            <button type="submit"> Search</button>
+            <button type="submit">Search</button>
         </form>
 
         <div id="messages">
@@ -610,7 +628,7 @@ def message_details(message_id):
         cursor.execute("SELECT recipient, message, spotify_url, album_image, track_name, artist_name FROM messages WHERE id = ?", (message_id,))
         message = cursor.fetchone()
     if message:
-        return render_template_string(message_template , recipient=message[0], message=message[1], spotify_url=message[2], album_image=message[3], track_name=message[4], artist_name=message[5])
+        return render_template_string(message_template, recipient=message[0], message=message[1], spotify_url=message[2], album_image=message[3], track_name=message[4], artist_name=message[5])
     return "Message not found", 404
 
 @app.route('/')
