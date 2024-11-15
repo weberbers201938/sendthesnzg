@@ -327,7 +327,7 @@ send_song_template = """
             background: #ddd;
         }
         .album-image {
-            width: 2em;
+            width: 30px;
             height: 30px;
             border-radius: 5px;
             margin-right: 10px;
@@ -360,18 +360,21 @@ send_song_template = """
 
     <script>
         async function searchSpotifySongs(query) {
-            if (query.length < 3) return;
+            if (query.length < 3) {
+                document.getElementById("songSuggestions").style.display = "none";
+                return;
+            }
             const response = await fetch('/search_song?query=' + encodeURIComponent(query));
             const results = await response.json();
             const suggestions = document.getElementById("songSuggestions");
             suggestions.innerHTML = "";
             if (results.tracks?.items) {
-                results.tracks?.items.forEach(track => {
+                results.tr acks.items.forEach(track => {
                     const item = document.createElement("div");
                     item.textContent = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
                     const tracksImage = document.createElement("img");
                     tracksImage.src = track.album.images[0].url;  // Get the album image
-                    tracksImage.style.width = "2em"; // Set a width for the image
+                    tracksImage.style.width = "30px"; // Set a width for the image
                     tracksImage.style.marginRight = "10px"; // Add some margin
                     tracksImage.style.verticalAlign = "middle";
                     tracksImage.className = "album-image"; // Set class for styling
@@ -387,6 +390,8 @@ send_song_template = """
                     suggestions.appendChild(item);
                 });
                 suggestions.style.display = "block";
+            } else {
+                suggestions.style.display = "none";
             }
         }
     </script>
