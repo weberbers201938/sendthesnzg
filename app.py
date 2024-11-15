@@ -61,7 +61,7 @@ index_template = """
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: #f8f9fa;
+            background-color: #f0e5d8; /* Vintage background color */
             color: #343a40;
             display: flex;
             flex-direction: column;
@@ -84,11 +84,11 @@ index_template = """
             margin-bottom: 20px;
             font-size: 2.5em;
             font-family: 'Playfair Display', serif;
-            color: #1DB954;
+            color: #8B4513; /* Vintage brown color */
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
         button {
-            background-color: #1DB954;
+            background-color: #8B4513; /* Vintage button color */
             color: #fff;
             padding: 12px;
             width: 100%;
@@ -101,7 +101,7 @@ index_template = """
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         button:hover {
-            background-color: #17a648;
+            background-color: #6f3c1e; /* Darker vintage color on hover */
             transform: translateY(-2px);
         }
         .slider {
@@ -125,7 +125,7 @@ index_template = """
             transition: transform 0.3s;
             position: relative;
             overflow: hidden;
-            border: 2px solid #1DB954; /* Green border */
+            border: 2px solid #8B4513; /* Vintage brown border */
         }
         .card:hover {
             transform: scale(1.05);
