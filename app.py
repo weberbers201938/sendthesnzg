@@ -155,7 +155,7 @@ index_template = """
         }
         @keyframes scroll {
             0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); } /* Adjusted to scroll through all cards */
+            100000000% { transform: translateX(-100000000%); } /* Adjusted to scroll through all cards */
         }
         .vintage-popup {
             border: 3px solid #b2967d;
