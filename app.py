@@ -48,7 +48,7 @@ def is_token_expired():
     return time.time() >= session.get('token_expiry', 0)
 
 # HTML Templates
-index_templates = """
+index_template = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
