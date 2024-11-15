@@ -62,7 +62,7 @@ index_template = """
             overflow: hidden;
         }
         .container {
-            max-width: 500px;
+            max-width: 600px;
             width: 100%;
             padding: 20px;
             text-align: center;
@@ -116,10 +116,11 @@ index_template = """
             transition: transform 0.3s;
             position: relative;
             overflow: hidden;
+            border: 2px solid #1DB954; /* Green border */
         }
         .card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transform: scale(1.05 );
+            box-shadow: 0 8px 20px rgba(0 , 0, 0, 0.3);
         }
         .card-title {
             font-size: 1.2em;
@@ -170,7 +171,7 @@ index_template = """
                     <p class="card-title"><strong>To:</strong> {{ msg[1] }}</p>
                     <p class="card-message">{{ msg[2] }}</p>
                     {% if msg[3] %}
-                        <iframe src="{{ msg[3].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media"></iframe>
+                        <iframe src="{{ msg[3].replace('open.spotify.com', 'embed.spotify.com') }}" frameborder="0" allow="encrypted-media" style="width: 100%; height: 80px; border-radius: 8px;"></iframe>
                     {% endif %}
                 </div>
             {% endfor %}
@@ -235,16 +236,15 @@ send_song_template = """
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
-        }
+            margin: 0 }
         .container {
-            max-width: 500px;
+            max-width: 600px;
             width: 100%;
             padding: 20px;
             text-align: center;
             background: #ffffff;
             border-radius: 10px;
-            box-shadow: 0  4px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
         h1 {
             margin-bottom: 20px;
@@ -337,7 +337,7 @@ send_song_template = """
                     item.textContent = track.name + " - " + track.artists.map(artist => artist.name).join(", ");
                     const tracksImage = document.createElement("img");
                     tracksImage.src = track.album.images[0].url;  // Get the album image
-                    tracksImage.style.width = "3em"; // Set a width for the image
+                    tracksImage.style.width = "2em"; // Set a width for the image
                     tracksImage.style.marginRight = "10px"; // Add some margin
                     tracksImage.style.verticalAlign = "middle";
                     item.prepend(tracksImage);
@@ -364,7 +364,7 @@ browse_template = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Browse Messages</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght @400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -436,7 +436,7 @@ browse_template = """
         }
         .message iframe {
             width: 100%;
-            height: 80px;
+            height: 120px; /* Increased height for better visibility */
             border-radius: 8px;
         }
     </style>
@@ -497,8 +497,7 @@ message_template = """
             text-align: center;
             background-color: #ffffff;
             border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0 ```python
-, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
         h1 {
             margin-bottom: 20px;
@@ -519,7 +518,7 @@ message_template = """
         }
         .message iframe {
             width: 100%;
-            height: 80px;
+            height: 120px; /* Increased height for better visibility */
             border-radius: 8px;
         }
         button {
@@ -589,7 +588,8 @@ def submit():
         cursor = conn.cursor()
         cursor.execute("INSERT INTO messages (recipient, message, spotify_url) VALUES (?, ?, ?)",
                        (recipient, message, spotify_url))
-    return redirect(url_for('send_song'))
+        message_id = cursor.lastrowid  # Get the ID of the newly inserted message
+    return redirect(url_for('message_details', message_id=message_id))  # Redirect to the message details page
 
 @app.route('/browse', methods=['GET'])
 def browse():
